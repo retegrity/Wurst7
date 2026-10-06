@@ -149,6 +149,7 @@
   "description.wurst.setting.crystalaura.filter_armor_stands": "Won't target armor stands when auto-placing crystals.",
   "description.wurst.setting.crystalaura.filter_damage_warning": "They can still take damage if they get too close to a valid target or an existing crystal.",
   "description.wurst.hack.derp": "Randomly moves your head around.\nOnly visible to other players.",
+  "description.wurst.hack.detector": "Detects players changing gamemodes or vanishing from the tablist",
   "description.wurst.hack.dolphin": "Makes you bob up in water automatically.\n(just like a dolphin)",
   "description.wurst.hack.excavator": "Automatically breaks all blocks in the selected area.",
   "description.wurst.hack.extraelytra": "Makes the Elytra easier to use.",
