@@ -161,6 +161,7 @@ public final class HackList implements UpdateListener
 	public final ProtectHack protectHack = new ProtectHack();
 	public final RadarHack radarHack = new RadarHack();
 	public final RainbowUiHack rainbowUiHack = new RainbowUiHack();
+	public final AntiBotHack antiBotHack = new AntiBotHack();
 	public final DetectorHack detectorHack = new DetectorHack();
 	public final ReachHack reachHack = new ReachHack();
 	public final RotationsHack rotationsHack = new RotationsHack();
