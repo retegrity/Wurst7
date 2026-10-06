@@ -25,6 +25,7 @@
     "KeyboardHandlerMixin",
     "LanguageManagerMixin",
     "LevelRendererMixin",
+    "LivingEntityRendererMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",
     "MouseHandlerMixin",
