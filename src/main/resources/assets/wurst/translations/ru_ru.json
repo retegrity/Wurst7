@@ -37,7 +37,6 @@
   "description.wurst.hack.autobuild": "Строит постройки автоматически.\nПоставьте один блок, чтобы начать строительство.",
   "description.wurst.setting.autobuild.face_target": "Как AutoBuild должен поворачиваться к блокам, которые он ставит.",
   "description.wurst.setting.autobuild.swing_hand": "Как AutoBuild должен махать рукой при размещении блоков.",
-  "description.wurst.hack.autocomplete": "Автодополнение сообщений в чате с использованием больших языковых моделей. Требуется аккаунт OpenAI с доступом к API или любой другой API языковой модели, совместимый с OpenAI.",
   "description.wurst.hack.autodrop": "Автоматически выбрасывает ненужные предметы.",
   "description.wurst.hack.autoleave": "Автоматически выходит с сервера, когда у вас мало здоровья.",
   "description.wurst.hack.autolibrarian": "Автоматически меняет профессию жителя на библиотекаря, пока тот не начнет продавать нужную книгу. Позволяет очень быстро создать торговый зал.",
