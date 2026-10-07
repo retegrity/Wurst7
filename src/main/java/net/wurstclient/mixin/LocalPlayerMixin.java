@@ -181,6 +181,13 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 	}
 	
 	@Override
+	public float getSpeed()
+	{
+		return super.getSpeed()
+			* WurstClient.INSTANCE.getHax().speedHackHack.getSpeedMultiplier();
+	}
+	
+	@Override
 	public void lerpMotion(Vec3 vec)
 	{
 		super.lerpMotion(WurstClient.INSTANCE.getHax().antiKnockbackHack
