@@ -19,7 +19,7 @@ import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 
-@SearchTags({"speed hack", "speed", "strafe", "air strafe"})
+@SearchTags({"speed hack", "speed", "strafe", "air strafe", "air control"})
 public final class SpeedHackHack extends Hack
 	implements UpdateListener, FlyingSpeedListener
 {
@@ -29,9 +29,10 @@ public final class SpeedHackHack extends Hack
 		1, 1, 5, 0.1, ValueDisplay.DECIMAL.withSuffix("x"));
 	
 	private final CheckboxSetting strafe = new CheckboxSetting("Strafe",
-		"Lets you steer in mid-air like in Counter-Strike. Holding a"
-			+ " sideways key while turning your camera in the same direction"
-			+ " adds speed without losing control.",
+		"Removes the delay when changing direction, in the air and on the"
+			+ " ground. You keep your speed but instantly move in the"
+			+ " direction you press, and you stop completely when you let go"
+			+ " of the movement keys.",
 		false);
 	
 	public SpeedHackHack()
@@ -80,30 +81,30 @@ public final class SpeedHackHack extends Hack
 	public void onUpdate()
 	{
 		if(strafe.isChecked())
-			airStrafe(MC.player);
+			strafe(MC.player);
 	}
 	
 	/**
-	 * Source-engine style air acceleration: input only adds speed along the
-	 * wished direction up to a small cap, which is what makes turning the
-	 * camera while strafing gain speed.
+	 * Instant direction changes, like LiquidBounce's Strafe: keeps your
+	 * current horizontal speed but points it in the direction you are
+	 * holding, and stops you completely when you let go of the keys.
 	 */
-	private void airStrafe(LocalPlayer player)
+	private void strafe(LocalPlayer player)
 	{
-		if(player.onGround() || player.isInWater() || player.isInLava()
-			|| player.onClimbable() || player.isFallFlying()
-			|| player.getAbilities().flying || player.isPassenger())
+		if(player.isInWater() || player.isInLava() || player.onClimbable()
+			|| player.isFallFlying() || player.getAbilities().flying
+			|| player.isPassenger())
 			return;
 		
+		Vec3 v = player.getDeltaMovement();
 		float forward = player.zza;
 		float sideways = player.xxa;
-		if(forward == 0 && sideways == 0)
-			return;
 		
-		// vanilla ground speed per tick, including sprinting and the multiplier
-		double maxSpeed = player.getSpeed() * 2.1585;
-		double cap = maxSpeed * 0.12;
-		double accel = maxSpeed * 0.15;
+		if(forward == 0 && sideways == 0)
+		{
+			player.setDeltaMovement(0, v.y, 0);
+			return;
+		}
 		
 		float yaw = player.getYRot() * Mth.DEG_TO_RAD;
 		double sin = Mth.sin(yaw);
@@ -114,13 +115,7 @@ public final class SpeedHackHack extends Hack
 		wx /= length;
 		wz /= length;
 		
-		Vec3 v = player.getDeltaMovement();
-		double currentSpeed = v.x * wx + v.z * wz;
-		double addSpeed = cap - currentSpeed;
-		if(addSpeed <= 0)
-			return;
-		
-		double add = Math.min(accel, addSpeed);
-		player.setDeltaMovement(v.x + wx * add, v.y, v.z + wz * add);
+		double currentSpeed = Math.sqrt(v.x * v.x + v.z * v.z);
+		player.setDeltaMovement(wx * currentSpeed, v.y, wz * currentSpeed);
 	}
 }

@@ -324,7 +324,7 @@
   "description.wurst.hack.skinderp": "Randomly toggles parts of your skin.",
   "description.wurst.hack.sneak": "Makes you sneak automatically.",
   "description.wurst.hack.snowshoe": "Allows you to walk on powder snow without freezing.\nDoes not prevent freezing when submerged.",
-  "description.wurst.hack.speedhack": "Speeds up your vanilla movement by up to 5x. Can also let you strafe in mid-air, similar to Counter-Strike.\n\n§6§lWARNING:§r Most servers will rubber-band or flag you for moving this fast.",
+  "description.wurst.hack.speedhack": "Speeds up your vanilla movement by up to 5x. Strafe makes direction changes and stops instant, in the air and on the ground.\n\n§6§lWARNING:§r Most servers will rubber-band or flag you for moving this fast.",
   "description.wurst.hack.speednuker": "Faster version of Nuker that cannot bypass NoCheat+.",
   "description.wurst.hack.spider": "Allows you to climb up walls like a spider.",
   "description.wurst.hack.step": "Allows you to step up full blocks.",
