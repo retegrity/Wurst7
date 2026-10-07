@@ -218,6 +218,9 @@ public final class KillauraLegitHack extends Hack implements UpdateListener,
 			range.getValue()))
 			return;
 		
+		if(WURST.getHax().criticalsHack.shouldDelayAttack())
+			return;
+		
 		// attack entity
 		MC.gameMode.attack(MC.player, target);
 		swingHand.swing(InteractionHand.MAIN_HAND);

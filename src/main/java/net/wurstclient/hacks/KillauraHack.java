@@ -186,6 +186,9 @@ public final class KillauraHack extends Hack
 		if(target == null)
 			return;
 		
+		if(WURST.getHax().criticalsHack.shouldDelayAttack())
+			return;
+		
 		MC.gameMode.attack(MC.player, target);
 		swingHand.swing(InteractionHand.MAIN_HAND);
 		
