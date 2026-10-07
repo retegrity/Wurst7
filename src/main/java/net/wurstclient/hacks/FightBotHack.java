@@ -211,6 +211,9 @@ public final class FightBotHack extends Hack
 		if(EntityUtils.distanceToHitboxSq(entity) > range.getValueSq())
 			return;
 		
+		if(WURST.getHax().criticalsHack.shouldDelayAttack())
+			return;
+		
 		// attack entity
 		MC.gameMode.attack(MC.player, entity);
 		swingHand.swing(InteractionHand.MAIN_HAND);

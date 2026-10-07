@@ -7,6 +7,7 @@
  */
 package net.wurstclient.hacks;
 
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket.Pos;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -24,8 +25,12 @@ public final class CriticalsHack extends Hack
 	private final EnumSetting<Mode> mode = new EnumSetting<>("Mode",
 		"\u00a7lPacket\u00a7r mode sends packets to server without actually moving you at all.\n\n"
 			+ "\u00a7lMini Jump\u00a7r mode does a tiny jump that is just enough to get a critical hit.\n\n"
-			+ "\u00a7lFull Jump\u00a7r mode makes you jump normally.",
+			+ "\u00a7lFull Jump\u00a7r mode makes you jump normally.\n\n"
+			+ "\u00a7lSmart\u00a7r mode doesn't fake anything. Instead, combat hacks like Killaura and TriggerBot wait while you are rising in a jump and only hit once you start falling, so the hit is a real critical. Nothing changes while you are on the ground.",
 		Mode.values(), Mode.PACKET);
+	
+	private static final int MAX_DELAY_TICKS = 30;
+	private int delayStartTick = -1;
 	
 	public CriticalsHack()
 	{
@@ -52,9 +57,52 @@ public final class CriticalsHack extends Hack
 		EVENTS.remove(PlayerAttacksEntityListener.class, this);
 	}
 	
+	/**
+	 * Used by combat hacks in Smart mode: returns true if they should hold
+	 * off attacking right now because the player is still rising in a jump
+	 * and would only land a normal hit.
+	 */
+	public boolean shouldDelayAttack()
+	{
+		if(!isEnabled() || mode.getSelected() != Mode.SMART)
+			return false;
+		
+		LocalPlayer player = MC.player;
+		if(player == null)
+			return false;
+		
+		if(player.onGround())
+		{
+			delayStartTick = -1;
+			return false;
+		}
+		
+		// cases where a critical isn't possible, so waiting is pointless
+		if(player.isInWater() || player.isInLava() || player.onClimbable()
+			|| player.isFallFlying() || player.isPassenger()
+			|| player.getAbilities().flying
+			|| WURST.getHax().flightHack.isEnabled())
+			return false;
+		
+		// already falling -> critical hit is possible
+		if(player.fallDistance > 0)
+		{
+			delayStartTick = -1;
+			return false;
+		}
+		
+		// never hold back attacks for too long
+		if(delayStartTick < 0)
+			delayStartTick = player.tickCount;
+		return player.tickCount - delayStartTick <= MAX_DELAY_TICKS;
+	}
+	
 	@Override
 	public void onPlayerAttacksEntity(Entity target)
 	{
+		if(mode.getSelected() == Mode.SMART)
+			return;
+		
 		if(!(target instanceof LivingEntity))
 			return;
 		
@@ -115,7 +163,8 @@ public final class CriticalsHack extends Hack
 	{
 		PACKET("Packet"),
 		MINI_JUMP("Mini Jump"),
-		FULL_JUMP("Full Jump");
+		FULL_JUMP("Full Jump"),
+		SMART("Smart");
 		
 		private final String name;
 		

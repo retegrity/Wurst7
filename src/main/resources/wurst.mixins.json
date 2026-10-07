@@ -30,6 +30,7 @@
     "KeyMappingMixin",
     "KeyboardHandlerMixin",
     "LanguageManagerMixin",
+    "LivingEntityAccessor",
     "LevelRendererMixin",
     "LocalPlayerMixin",
     "MinecraftMixin",
