@@ -71,6 +71,14 @@ public final class AutoBuildHack extends Hack
 			+ " from whatever block you are holding.",
 		true);
 	
+	private final CheckboxSetting placeInAir = new CheckboxSetting(
+		"Place in mid-air",
+		"Lets AutoBuild place blocks even when there is no neighboring block"
+			+ " to place against, so you don't have to move around to find a"
+			+ " good angle. Blocks that can be placed normally still are.\n\n"
+			+ "Some servers and anti-cheats may not like this.",
+		true);
+	
 	private final FaceTargetSetting faceTarget =
 		FaceTargetSetting.withoutPacketSpam(this, FaceTarget.SERVER);
 	
@@ -100,6 +108,7 @@ public final class AutoBuildHack extends Hack
 		addSetting(range);
 		addSetting(checkLOS);
 		addSetting(useSavedBlocks);
+		addSetting(placeInAir);
 		addSetting(faceTarget);
 		addSetting(swingHand);
 		addSetting(fastPlace);
@@ -252,6 +261,9 @@ public final class AutoBuildHack extends Hack
 			Item item = entry.getValue();
 			
 			BlockPlacingParams params = BlockPlacer.getBlockPlacingParams(pos);
+			if(params == null && placeInAir.isChecked())
+				params = BlockPlacer.getAirPlacingParams(pos);
+			
 			if(params == null || params.distanceSq() > rangeSq
 				|| params.requiresSneaking()
 				|| checkLOS.isChecked() && !params.lineOfSight())
