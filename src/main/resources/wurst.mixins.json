@@ -41,7 +41,6 @@
     "antiknockback.ClientPacketListenerMixin",
     "antiknockback.LocalPlayerMixin",
     "antiwaterpush.EntityMixin",
-    "autocomplete.CommandSuggestionsMixin",
     "autorespawn.DeathScreenMixin",
     "autosign.AbstractSignEditScreenMixin",
     "autosprint.LocalPlayerMixin",
