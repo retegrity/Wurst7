@@ -133,6 +133,13 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 	}
 	
 	@Override
+	public float getSpeed()
+	{
+		return super.getSpeed()
+			* WurstClient.INSTANCE.getHax().speedHackHack.getSpeedMultiplier();
+	}
+	
+	@Override
 	public boolean isInWater()
 	{
 		boolean inWater = super.isInWater();
