@@ -115,6 +115,9 @@ public final class MultiAuraHack extends Hack implements UpdateListener
 		
 		WURST.getHax().autoSwordHack.setSlot(entities.get(0));
 		
+		if(WURST.getHax().criticalsHack.shouldDelayAttack())
+			return;
+		
 		// attack entities
 		for(Entity entity : entities)
 		{

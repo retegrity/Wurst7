@@ -155,6 +155,9 @@ public final class TriggerBotHack extends Hack
 		
 		WURST.getHax().autoSwordHack.setSlot(target);
 		
+		if(WURST.getHax().criticalsHack.shouldDelayAttack())
+			return;
+		
 		if(simulateMouseClick.isChecked())
 		{
 			IKeyMapping.get(MC.options.keyAttack).simulatePress(true);

@@ -131,6 +131,9 @@ public final class TpAuraHack extends Hack implements UpdateListener
 		if(player.getAttackStrengthScale(0) < 1)
 			return;
 		
+		if(WURST.getHax().criticalsHack.shouldDelayAttack())
+			return;
+		
 		// attack entity
 		RotationUtils.getNeededRotations(entity.getBoundingBox().getCenter())
 			.sendPlayerLookPacket();

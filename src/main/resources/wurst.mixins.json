@@ -24,6 +24,7 @@
     "KeyMappingMixin",
     "KeyboardHandlerMixin",
     "LanguageManagerMixin",
+    "LivingEntityAccessor",
     "LevelRendererMixin",
     "LivingEntityRendererMixin",
     "LocalPlayerMixin",
