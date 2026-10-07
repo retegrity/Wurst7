@@ -37,7 +37,6 @@
   "description.wurst.hack.autobuild": "Automatycznie buduje rzeczy.\nUmieść pojedynczy blok, aby rozpocząć budowanie.",
   "description.wurst.setting.autobuild.face_target": "Jak AutoBuild powinien być skierowany na umieszczane bloki.",
   "description.wurst.setting.autobuild.swing_hand": "Jak AutoBuild powinien machać ręką podczas umieszczania bloków.",
-  "description.wurst.hack.autocomplete": "Automatycznie uzupełnia twoje wiadomości czatu za pomocą dużych modeli językowych. Wymaga konta OpenAI z dostępem do API lub dowolnego innego API modelu językowego, który jest kompatybilny z OpenAI.",
   "description.wurst.hack.autodrop": "Automatycznie wyrzuca niechciane przedmioty.",
   "description.wurst.hack.autoleave": "Automatycznie opuszcza serwer, gdy masz mało życia.",
   "description.wurst.hack.autolibrarian": "Automatycznie szkoli osadnika, aby stał się bibliotekarzem sprzedającym określoną zaklętą książkę. Możesz błyskawicznie stworzyć całą halę handlową, korzystając z tego hacka.",

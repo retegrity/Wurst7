@@ -33,7 +33,6 @@
   "description.wurst.setting.arrowdmg.trident_yeet_mode": "Etkinleştirildiğinde, mızraklar çok daha uzağa fırlar. Hasarı veya Riptide'ı etkilemez gibi görünüyor.\n\n§c§lUYARI:§r Bu seçeneği etkinleştirerek mızrağınızı kolayca kaybedebilirsiniz!",
   "description.wurst.hack.autoarmor": "Zırhınızı otomatik olarak yönetir.",
   "description.wurst.hack.autobuild": "Otomatik olarak inşa eder.\nİnşa etmeye başlamak için tek bir blok yerleştirin.",
-  "description.wurst.hack.autocomplete": "Büyük dil modellerini kullanarak sohbet mesajlarınızı otomatik olarak tamamlar. API erişimi olan bir OpenAI hesabı veya OpenAI ile uyumlu başka bir dil modeli API'si gerektirir.",
   "description.wurst.hack.autodrop": "İstenmeyen eşyaları otomatik olarak düşürür.",
   "description.wurst.hack.autoleave": "Sağlığınız düşük olduğunda otomatik olarak sunucudan ayrılır.",
   "description.wurst.hack.autolibrarian": "Bir köylüyü belirli bir büyülü kitap satan bir kütüphaneci olacak şekilde otomatik olarak eğitir. Bu hileyi kullanarak kısa sürede bir ticaret salonu kurabilirsiniz.",

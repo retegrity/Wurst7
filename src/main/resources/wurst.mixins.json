@@ -44,7 +44,6 @@
     "StatsScreenMixin",
     "TitleScreenMixin",
     "anticactus.CactusBlockMixin",
-    "autocomplete.CommandSuggestionsMixin",
     "autorespawn.DeathScreenMixin",
     "autosign.AbstractSignEditScreenMixin",
     "autosprint.LocalPlayerMixin",

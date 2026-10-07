@@ -37,7 +37,6 @@
   "description.wurst.hack.autobuild": "自动建筑东西。\n放一个方块就开始自动建造。",
   "description.wurst.setting.autobuild.face_target": "AutoBuild 应以何种方式朝向其放置的方块。",
   "description.wurst.setting.autobuild.swing_hand": "放置方块时，AutoBuild 应如何挥动你的手。",
-  "description.wurst.hack.autocomplete": "使用大型语言模型自动完成你的聊天消息。 需要具有 API 访问权限的 OpenAI 帐户或与 OpenAI 兼容的任何其他语言模型 API。",
   "description.wurst.hack.autodrop": "自动丢弃你不想要的物品（可以预设）。",
   "description.wurst.hack.autoleave": "血量过低时自动离开服务器。",
   "description.wurst.hack.autolibrarian": "自动训练村民成为图书管理员，出售特定的附魔书。 通过这个技术，你可以立即建立一个完整的村民交易所。",
