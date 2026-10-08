@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.phys.Vec3;
 import net.wurstclient.WurstClient;
+import net.wurstclient.hacks.ItemEspHack;
 import net.wurstclient.hacks.NameTagsHack;
 
 @Mixin(SubmitNodeCollection.class)
@@ -54,13 +55,20 @@ public class SubmitNodeCollectionMixin
 		boolean seeThrough, int lightCoords, CameraRenderState camera)
 	{
 		NameTagsHack nameTagsHack = WurstClient.INSTANCE.getHax().nameTagsHack;
-		if(!nameTagsHack.isEnabled())
+		ItemEspHack itemEspHack = WurstClient.INSTANCE.getHax().itemEspHack;
+		
+		float userScale;
+		if(itemEspHack.isRenderingNameTag())
+			userScale = itemEspHack.getNameScale();
+		else if(nameTagsHack.isEnabled())
+			userScale = nameTagsHack.getScale();
+		else
 		{
 			original.call(matrices, x, y, z);
 			return;
 		}
 		
-		float scale = 0.025F * nameTagsHack.getScale();
+		float scale = 0.025F * userScale;
 		
 		if(RenderSystem.getProjectionType() == ProjectionType.PERSPECTIVE)
 		{
@@ -95,7 +103,7 @@ public class SubmitNodeCollectionMixin
 	private void swapNormalNameTagSubmit(SimpleFeatureRenderPhase phase,
 		SubmitNode submit, Operation<Void> original)
 	{
-		if(!WurstClient.INSTANCE.getHax().nameTagsHack.isSeeThrough())
+		if(!isSeeThrough())
 		{
 			original.call(phase, submit);
 			return;
@@ -114,7 +122,7 @@ public class SubmitNodeCollectionMixin
 		TranslucentFeatureRenderPhase phase, TranslucentSubmit submit,
 		Operation<Void> original)
 	{
-		if(!WurstClient.INSTANCE.getHax().nameTagsHack.isSeeThrough())
+		if(!isSeeThrough())
 		{
 			original.call(phase, submit);
 			return;
@@ -122,6 +130,16 @@ public class SubmitNodeCollectionMixin
 		
 		nameTags.submit(copyWithDisplayMode(
 			(NameTagFeatureRenderer.Submit)submit, Font.DisplayMode.NORMAL));
+	}
+	
+	/**
+	 * NameTags can turn this on for all name tags, ItemESP always uses it for
+	 * item names.
+	 */
+	private boolean isSeeThrough()
+	{
+		return WurstClient.INSTANCE.getHax().nameTagsHack.isSeeThrough()
+			|| WurstClient.INSTANCE.getHax().itemEspHack.isRenderingNameTag();
 	}
 	
 	private NameTagFeatureRenderer.Submit copyWithDisplayMode(

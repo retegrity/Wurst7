@@ -26,6 +26,7 @@ import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.ColorSetting;
 import net.wurstclient.settings.EspBoxSizeSetting;
 import net.wurstclient.settings.EspStyleSetting;
+import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.util.EntityUtils;
 import net.wurstclient.util.RenderUtils;
 
@@ -45,6 +46,13 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 	private final CheckboxSetting names = new CheckboxSetting("Show item names",
 		"Shows the name and stack size of each item above it.", true);
 	
+	private final SliderSetting nameScale =
+		new SliderSetting("Name scale", "How large the item names should be.",
+			1, 0.05, 5, 0.05, SliderSetting.ValueDisplay.PERCENTAGE);
+	
+	// true while the name of a dropped item is being drawn
+	private boolean renderingNameTag;
+	
 	private final ArrayList<ItemEntity> items = new ArrayList<>();
 	
 	public ItemEspHack()
@@ -55,6 +63,7 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		addSetting(boxSize);
 		addSetting(color);
 		addSetting(names);
+		addSetting(nameScale);
 	}
 	
 	@Override
@@ -80,6 +89,21 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		for(Entity entity : MC.level.entitiesForRendering())
 			if(entity instanceof ItemEntity)
 				items.add((ItemEntity)entity);
+	}
+	
+	public float getNameScale()
+	{
+		return nameScale.getValueF();
+	}
+	
+	public boolean isRenderingNameTag()
+	{
+		return renderingNameTag;
+	}
+	
+	public void setRenderingNameTag(boolean renderingNameTag)
+	{
+		this.renderingNameTag = renderingNameTag;
 	}
 	
 	public boolean shouldShowNames()
