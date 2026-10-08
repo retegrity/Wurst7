@@ -10,11 +10,13 @@ package net.wurstclient.hacks;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.wurstclient.Category;
+import net.wurstclient.SearchTags;
 import net.wurstclient.hack.Hack;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 
-public final class NoShieldOverlayHack extends Hack
+@SearchTags({"low shield", "no shield overlay"})
+public final class LowShieldHack extends Hack
 {
 	public final SliderSetting blockingOffset =
 		new SliderSetting("Blocking offset",
@@ -26,9 +28,9 @@ public final class NoShieldOverlayHack extends Hack
 			"The amount to lower the shield overlay when not blocking.", 0.2, 0,
 			0.5, 0.01, ValueDisplay.DECIMAL);
 	
-	public NoShieldOverlayHack()
+	public LowShieldHack()
 	{
-		super("NoShieldOverlay");
+		super("LowShield");
 		setCategory(Category.RENDER);
 		addSetting(blockingOffset);
 		addSetting(nonBlockingOffset);

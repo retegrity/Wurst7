@@ -103,7 +103,7 @@
   "description.wurst.hack.noclip": "允許你自由穿透過方塊。\n一個（例如：沙子）可以掉落嘅方塊掉喺你嘅頭頂才能激活。\n\n§c§l警告：§r 你將會受到傷害當你穿透牆果陣！",
   "description.wurst.hack.nocomcrash": "利用 Nocom 漏洞使伺服器卡頓或崩潰。\n經測試可喺 Vanilla、Spigot 同 Fabric 上工作，Paper 同一啲擁有特定反作弊嘅伺服器無法使用。",
   "description.wurst.hack.nofall": "從高處仆落嚟免受傷害。",
-  "description.wurst.hack.nofireoverlay": "防止火焰阻擋視野。\n\n§c§l警告：§r呢可能會導致你因唔知身上有火而燒傷致死。",
+  "description.wurst.hack.lowfire": "防止火焰阻擋視野。\n\n§c§l警告：§r呢可能會導致你因唔知身上有火而燒傷致死。",
   "description.wurst.hack.nohurtcam": "關閉因受傷而產生視野搖晃效果。",
   "description.wurst.hack.nooverlay": "防止因喺水中、岩漿或幼雪產生視野阻擋。",
   "description.wurst.hack.nopumpkin": "防止因帶南瓜頭而導致視野阻擋。",

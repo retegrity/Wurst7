@@ -163,6 +163,12 @@ public enum RenderUtils
 	public static void drawTracers(PoseStack matrices, float partialTicks,
 		List<ColoredPoint> ends, boolean depthTest)
 	{
+		drawTracers(matrices, partialTicks, ends, depthTest, 2);
+	}
+	
+	public static void drawTracers(PoseStack matrices, float partialTicks,
+		List<ColoredPoint> ends, boolean depthTest, float lineWidth)
+	{
 		WurstBufferSource bs = new WurstBufferSource();
 		RenderType layer = WurstRenderLayers.getLines(depthTest);
 		VertexConsumer buffer = bs.getBuffer(layer);
@@ -170,8 +176,12 @@ public enum RenderUtils
 		Vec3 start = getTracerOrigin(partialTicks);
 		Vec3 offset = getCameraPos().reverse();
 		for(ColoredPoint end : ends)
-			drawLine(matrices, buffer, start, end.point().add(offset),
-				end.color());
+		{
+			Vec3 endPos = end.point().add(offset);
+			drawLine(matrices.last(), buffer, (float)start.x, (float)start.y,
+				(float)start.z, (float)endPos.x, (float)endPos.y,
+				(float)endPos.z, end.color(), lineWidth);
+		}
 		
 		bs.uploadAndDraw();
 	}
@@ -192,9 +202,16 @@ public enum RenderUtils
 	public static void drawLine(PoseStack.Pose entry, VertexConsumer buffer,
 		float x1, float y1, float z1, float x2, float y2, float z2, int color)
 	{
+		drawLine(entry, buffer, x1, y1, z1, x2, y2, z2, color, 2);
+	}
+	
+	public static void drawLine(PoseStack.Pose entry, VertexConsumer buffer,
+		float x1, float y1, float z1, float x2, float y2, float z2, int color,
+		float lineWidth)
+	{
 		Vector3f normal = new Vector3f(x2, y2, z2).sub(x1, y1, z1).normalize();
 		buffer.addVertex(entry, x1, y1, z1).setColor(color)
-			.setNormal(entry, normal).setLineWidth(2);
+			.setNormal(entry, normal).setLineWidth(lineWidth);
 		
 		// If the line goes through the screen, add another vertex there. This
 		// works around a bug in Minecraft's line shader.
@@ -204,13 +221,13 @@ public enum RenderUtils
 		{
 			Vector3f closeToCam = new Vector3f(normal).mul(t).add(x1, y1, z1);
 			buffer.addVertex(entry, closeToCam).setColor(color)
-				.setNormal(entry, normal).setLineWidth(2);
+				.setNormal(entry, normal).setLineWidth(lineWidth);
 			buffer.addVertex(entry, closeToCam).setColor(color)
-				.setNormal(entry, normal).setLineWidth(2);
+				.setNormal(entry, normal).setLineWidth(lineWidth);
 		}
 		
 		buffer.addVertex(entry, x2, y2, z2).setColor(color)
-			.setNormal(entry, normal).setLineWidth(2);
+			.setNormal(entry, normal).setLineWidth(lineWidth);
 	}
 	
 	public static void drawLine(VertexConsumer buffer, float x1, float y1,
