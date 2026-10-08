@@ -13,6 +13,7 @@ import java.util.function.BooleanSupplier;
 import net.wurstclient.DontBlock;
 import net.wurstclient.SearchTags;
 import net.wurstclient.other_feature.OtherFeature;
+import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.ColorSetting;
 import net.wurstclient.settings.EnumSetting;
 
@@ -31,17 +32,29 @@ public final class WurstLogoOtf extends OtherFeature
 	private final EnumSetting<Visibility> visibility =
 		new EnumSetting<>("Visibility", Visibility.values(), Visibility.ALWAYS);
 	
+	private final CheckboxSetting onlyLogo =
+		new CheckboxSetting("Only show the Wurst Logo",
+			"Hides the background and the version text, so that only the Wurst"
+				+ " logo itself is shown.",
+			false);
+	
 	public WurstLogoOtf()
 	{
 		super("WurstLogo", "Shows the Wurst logo and version on the screen.");
 		addSetting(bgColor);
 		addSetting(txtColor);
 		addSetting(visibility);
+		addSetting(onlyLogo);
 	}
 	
 	public boolean isVisible()
 	{
 		return visibility.getSelected().isVisible();
+	}
+	
+	public boolean isOnlyLogo()
+	{
+		return onlyLogo.isChecked();
 	}
 	
 	public int getBackgroundColor()
