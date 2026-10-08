@@ -103,7 +103,8 @@ public class SubmitNodeCollectionMixin
 	private void swapNormalNameTagSubmit(SimpleFeatureRenderPhase phase,
 		SubmitNode submit, Operation<Void> original)
 	{
-		if(!isSeeThrough())
+		// item names are handled in swapSeeThroughNameTagSubmit()
+		if(isRenderingItemName() || !isSeeThrough())
 		{
 			original.call(phase, submit);
 			return;
@@ -122,6 +123,19 @@ public class SubmitNodeCollectionMixin
 		TranslucentFeatureRenderPhase phase, TranslucentSubmit submit,
 		Operation<Void> original)
 	{
+		// Vanilla draws this layer dimmed and with the background behind
+		// blocks, so for item names just make it fully bright.
+		if(isRenderingItemName())
+		{
+			NameTagFeatureRenderer.Submit nameTag =
+				(NameTagFeatureRenderer.Submit)submit;
+			original.call(phase,
+				new NameTagFeatureRenderer.Submit(nameTag.pose(), nameTag.x(),
+					nameTag.y(), nameTag.text(), nameTag.lightCoords(), -1,
+					nameTag.backgroundColor(), nameTag.displayMode()));
+			return;
+		}
+		
 		if(!isSeeThrough())
 		{
 			original.call(phase, submit);
@@ -132,14 +146,14 @@ public class SubmitNodeCollectionMixin
 			(NameTagFeatureRenderer.Submit)submit, Font.DisplayMode.NORMAL));
 	}
 	
-	/**
-	 * NameTags can turn this on for all name tags, ItemESP always uses it for
-	 * item names.
-	 */
 	private boolean isSeeThrough()
 	{
-		return WurstClient.INSTANCE.getHax().nameTagsHack.isSeeThrough()
-			|| WurstClient.INSTANCE.getHax().itemEspHack.isRenderingNameTag();
+		return WurstClient.INSTANCE.getHax().nameTagsHack.isSeeThrough();
+	}
+	
+	private boolean isRenderingItemName()
+	{
+		return WurstClient.INSTANCE.getHax().itemEspHack.isRenderingNameTag();
 	}
 	
 	private NameTagFeatureRenderer.Submit copyWithDisplayMode(

@@ -58,6 +58,7 @@
     "nameprotect.StringDecomposerMixin",
     "nametags.EntityRendererMixin",
     "itemesp.EntityRendererMixin",
+    "itemesp.LevelExtractorMixin",
     "nametags.LivingEntityRendererMixin",
     "nametags.MobRendererMixin",
     "nametags.SubmitNodeCollectionMixin",
