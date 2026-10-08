@@ -57,6 +57,7 @@
     "healthtags.EntityRendererMixin",
     "nameprotect.StringDecomposerMixin",
     "nametags.EntityRendererMixin",
+    "itemesp.EntityRendererMixin",
     "nametags.LivingEntityRendererMixin",
     "nametags.MobRendererMixin",
     "nametags.SubmitNodeCollectionMixin",

@@ -22,6 +22,7 @@ import net.wurstclient.events.CameraTransformViewBobbingListener;
 import net.wurstclient.events.RenderListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.hack.Hack;
+import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.ColorSetting;
 import net.wurstclient.settings.EspBoxSizeSetting;
 import net.wurstclient.settings.EspStyleSetting;
@@ -41,6 +42,9 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 	private final ColorSetting color = new ColorSetting("Color",
 		"Items will be highlighted in this color.", Color.YELLOW);
 	
+	private final CheckboxSetting names = new CheckboxSetting("Show item names",
+		"Shows the name and stack size of each item above it.", true);
+	
 	private final ArrayList<ItemEntity> items = new ArrayList<>();
 	
 	public ItemEspHack()
@@ -50,6 +54,7 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		addSetting(style);
 		addSetting(boxSize);
 		addSetting(color);
+		addSetting(names);
 	}
 	
 	@Override
@@ -75,6 +80,11 @@ public final class ItemEspHack extends Hack implements UpdateListener,
 		for(Entity entity : MC.level.entitiesForRendering())
 			if(entity instanceof ItemEntity)
 				items.add((ItemEntity)entity);
+	}
+	
+	public boolean shouldShowNames()
+	{
+		return isEnabled() && names.isChecked();
 	}
 	
 	@Override
