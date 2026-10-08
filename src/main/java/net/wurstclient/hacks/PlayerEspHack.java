@@ -26,6 +26,8 @@ import net.wurstclient.hack.Hack;
 import net.wurstclient.settings.EspBoxSizeSetting;
 import net.wurstclient.settings.EspStyleSetting;
 import net.wurstclient.settings.EspStyleSetting.EspStyle;
+import net.wurstclient.settings.SliderSetting;
+import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.settings.filterlists.EntityFilterList;
 import net.wurstclient.settings.filters.FilterCreativeSetting;
 import net.wurstclient.settings.filters.FilterInvisibleSetting;
@@ -46,6 +48,10 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 		"\u00a7lAccurate\u00a7r mode shows the exact hitbox of each player.\n"
 			+ "\u00a7lFancy\u00a7r mode shows slightly larger boxes that look better.");
 	
+	private final SliderSetting lineWidth =
+		new SliderSetting("Line width", "How thick the tracer lines should be.",
+			2, 1, 10, 0.5, ValueDisplay.DECIMAL);
+	
 	private final EntityFilterList entityFilters =
 		new EntityFilterList(FilterCreativeSetting.genericVision(false),
 			FilterSleepingSetting.genericVision(false),
@@ -59,6 +65,7 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 		setCategory(Category.RENDER);
 		addSetting(style);
 		addSetting(boxSize);
+		addSetting(lineWidth);
 		entityFilters.forEach(this::addSetting);
 	}
 	
@@ -128,7 +135,8 @@ public final class PlayerEspHack extends Hack implements UpdateListener,
 				ends.add(new ColoredPoint(point, getColor(e)));
 			}
 			
-			RenderUtils.drawTracers(matrixStack, partialTicks, ends, false);
+			RenderUtils.drawTracers(matrixStack, partialTicks, ends, false,
+				lineWidth.getValueF());
 		}
 	}
 	

@@ -106,7 +106,7 @@
   "description.wurst.hack.noclip": "Vous permet de vous déplacer librement à travers les blocs.\nUn bloc (par exemple du sable) doit tomber sur votre tête pour l'activer.\n\n§c§lATTENTION:§r Vous subirez des dégâts en vous déplaçant à travers les blocs !",
   "description.wurst.hack.nocomcrash": "Lags et plantages des serveurs en utilisant l'exploit Nocom.\nNe fonctionne pas sur les serveurs Paper. Testé en Vanilla, Spigot et Fabric. Peut être désactivé par certains AntiCheats.",
   "description.wurst.hack.nofall": "Vous protège des dommages causés par les chutes.",
-  "description.wurst.hack.nofireoverlay": "Bloque l'overlay lorsque vous êtes en feu.\n\n§c§lATTENTION:§r Cela peut vous faire brûler jusqu'à la mort sans que vous vous en apercevez.",
+  "description.wurst.hack.lowfire": "Bloque l'overlay lorsque vous êtes en feu.\n\n§c§lATTENTION:§r Cela peut vous faire brûler jusqu'à la mort sans que vous vous en apercevez.",
   "description.wurst.hack.nohurtcam": "Désactive l'effet de tremblement lorsque vous vous blessez.",
   "description.wurst.hack.nolevitation": "Désactive l'effet de lévitation quand vous êtes touché par un Shulker.\n\n§c§lATTENTION:§r Vous tomberez si vous activez ceci alors que l'effet de lévitation est déjà actif!",
   "description.wurst.hack.nooverlay": "Bloque les overlays d'eau, de lave et de neige poudreuse.",

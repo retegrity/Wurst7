@@ -20,9 +20,9 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContex
 import net.minecraft.world.InteractionHand;
 import net.wurstclient.gametest.SingleplayerTest;
 
-public final class NoShieldOverlayHackTest extends SingleplayerTest
+public final class LowShieldHackTest extends SingleplayerTest
 {
-	public NoShieldOverlayHackTest(ClientGameTestContext context,
+	public LowShieldHackTest(ClientGameTestContext context,
 		TestSingleplayerContext spContext)
 	{
 		super(context, spContext);
@@ -31,7 +31,7 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 	@Override
 	protected void runImpl()
 	{
-		logger.info("Testing NoShieldOverlay hack");
+		logger.info("Testing LowShield hack");
 		
 		// Reference screenshot with no item or hand
 		moveHandOutOfView();
@@ -43,7 +43,7 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 		
 		// Default 0.5 makes custom shield items disappear entirely because
 		// their item model isn't as tall as a normal shield.
-		runWurstCommand("setslider NoShieldOverlay blocking_offset 0.3");
+		runWurstCommand("setslider LowShield blocking_offset 0.3");
 		
 		// Custom shield, should be lowered
 		testItem(referencePath, "custom shield",
@@ -57,7 +57,7 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 			"bread[consumable={consume_seconds:999999}]", false);
 		
 		// Clean up
-		runWurstCommand("setslider NoShieldOverlay blocking_offset 0.5");
+		runWurstCommand("setslider LowShield blocking_offset 0.5");
 		clearInventory();
 		waitForHandSwing();
 	}
@@ -82,14 +82,14 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 		// Hack off + idle
 		Path offIdlePath = context
 			.takeScreenshot("noshieldoverlay_" + nameForFiles + "_off_idle");
-		runWurstCommand("t NoShieldOverlay on");
+		runWurstCommand("t LowShield on");
 		
 		// Hack on + idle
 		Path onIdlePath = context
 			.takeScreenshot("noshieldoverlay_" + nameForFiles + "_on_idle");
 		assertItemMovement(name, "idle", shouldBeLowered, referencePath,
 			offIdlePath, onIdlePath);
-		runWurstCommand("t NoShieldOverlay off");
+		runWurstCommand("t LowShield off");
 		
 		// Hack off + blocking
 		input.holdMouse(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
@@ -100,7 +100,7 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 		input.releaseMouse(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 		
 		// Hack on + blocking
-		runWurstCommand("t NoShieldOverlay on");
+		runWurstCommand("t LowShield on");
 		input.holdMouse(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
 		context.waitTick();
 		waitForHandSwing();
@@ -109,7 +109,7 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 		assertItemMovement(name, "blocking", shouldBeLowered, referencePath,
 			offBlockingPath, onBlockingPath);
 		input.releaseMouse(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
-		runWurstCommand("t NoShieldOverlay off");
+		runWurstCommand("t LowShield off");
 	}
 	
 	private void assertItemMovement(String name, String scenario,
@@ -149,10 +149,9 @@ public final class NoShieldOverlayHackTest extends SingleplayerTest
 			
 		}catch(RuntimeException e)
 		{
-			failWithScreenshot(
-				"noshieldoverlay_" + name.replace(" ", "_") + "_" + scenario
-					+ "_failure",
-				"NoShieldOverlay test failed", e.getMessage());
+			failWithScreenshot("noshieldoverlay_" + name.replace(" ", "_") + "_"
+				+ scenario + "_failure", "LowShield test failed",
+				e.getMessage());
 		}
 	}
 	

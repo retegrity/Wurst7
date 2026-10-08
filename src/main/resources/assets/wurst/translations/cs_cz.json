@@ -109,7 +109,7 @@
   "description.wurst.hack.noclip": "Umožňuje volný pohyb mezi bloky.\nBlok (např. písek) musí spadnout na vaši hlavu k aktivovaci.\n\n§c§lUPOZORNĚNÍ:§r Při pohybu mezi bloky se budete zraňovat!",
   "description.wurst.hack.nocomcrash": "Laguje a shazuje servery Nocom exploitem.\nNefunguje na Paper serverech. Testováno na Vanile, Spigotu a Fabricu. Některé AntiCheaty mohou znemožňovat jeho použití.",
   "description.wurst.hack.nofall": "Chrání vás před poškozením pádem.",
-  "description.wurst.hack.nofireoverlay": "Blokuje překrytí ohně.\n\n§c§lUPOZORNĚNÍ:§r Může způsobit uhoření bez povšimnutí.",
+  "description.wurst.hack.lowfire": "Blokuje překrytí ohně.\n\n§c§lUPOZORNĚNÍ:§r Může způsobit uhoření bez povšimnutí.",
   "description.wurst.hack.nohurtcam": "Zakáže třes obrazovky při zranění.",
   "description.wurst.hack.nolevitation": "Odstraní efekt levitace, když vás zasáhne Shulker.\n\n§c§lVAROVÁNÍ:§r Pokud toto zapnete během levitace, spadnete!",
   "description.wurst.hack.nooverlay": "Blokuje překrytí vody, lávy a prašanu.",
