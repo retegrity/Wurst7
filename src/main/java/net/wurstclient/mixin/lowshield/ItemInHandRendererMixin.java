@@ -5,7 +5,7 @@
  * License, version 3. If a copy of the GPL was not distributed with this
  * file, You can obtain one at: https://www.gnu.org/licenses/gpl-3.0.txt
  */
-package net.wurstclient.mixin.noshieldoverlay;
+package net.wurstclient.mixin.lowshield;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,7 +27,7 @@ public abstract class ItemInHandRendererMixin
 {
 	/**
 	 * Lowers the shield (including custom shield items from datapacks) when
-	 * blocking if NoShieldOverlay is enabled.
+	 * blocking if LowShield is enabled.
 	 */
 	@Inject(
 		method = "submitArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
@@ -45,13 +45,13 @@ public abstract class ItemInHandRendererMixin
 			return;
 		
 		// Lower the shield
-		WurstClient.INSTANCE.getHax().noShieldOverlayHack
+		WurstClient.INSTANCE.getHax().lowShieldHack
 			.adjustShieldPosition(matrices, true);
 	}
 	
 	/**
 	 * Lowers the shield (including custom shield items from datapacks) when
-	 * NOT blocking if NoShieldOverlay is enabled.
+	 * NOT blocking if LowShield is enabled.
 	 */
 	@Inject(
 		method = "submitArmWithItem(Lnet/minecraft/client/player/AbstractClientPlayer;FFLnet/minecraft/world/InteractionHand;FLnet/minecraft/world/item/ItemStack;FLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;I)V",
@@ -68,7 +68,7 @@ public abstract class ItemInHandRendererMixin
 			return;
 		
 		// Lower the shield
-		WurstClient.INSTANCE.getHax().noShieldOverlayHack
+		WurstClient.INSTANCE.getHax().lowShieldHack
 			.adjustShieldPosition(matrices, false);
 	}
 }
