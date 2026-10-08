@@ -27,21 +27,25 @@ public final class WurstLogo
 		if(!otf.isVisible())
 			return;
 		
-		String version = getVersionString();
-		Font tr = WurstClient.MC.font;
-		
-		// background
-		int bgColor;
-		if(WURST.getHax().rainbowUiHack.isEnabled())
-			bgColor = RenderUtils.toIntColor(WURST.getGui().getAcColor(), 0.5F);
-		else
-			bgColor = otf.getBackgroundColor();
-		context.fill(0, 6, tr.width(version) + 76, 17, bgColor);
-		
-		context.guiRenderState.up();
-		
-		// version string
-		context.text(tr, version, 74, 8, otf.getTextColor(), false);
+		if(!otf.isOnlyLogo())
+		{
+			String version = getVersionString();
+			Font tr = WurstClient.MC.font;
+			
+			// background
+			int bgColor;
+			if(WURST.getHax().rainbowUiHack.isEnabled())
+				bgColor =
+					RenderUtils.toIntColor(WURST.getGui().getAcColor(), 0.5F);
+			else
+				bgColor = otf.getBackgroundColor();
+			context.fill(0, 6, tr.width(version) + 76, 17, bgColor);
+			
+			context.guiRenderState.up();
+			
+			// version string
+			context.text(tr, version, 74, 8, otf.getTextColor(), false);
+		}
 		
 		// Wurst logo
 		context.blit(RenderPipelines.GUI_TEXTURED, LOGO_TEXTURE, 0, 3, 0, 0, 72,
