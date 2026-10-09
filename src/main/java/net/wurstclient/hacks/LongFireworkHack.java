@@ -29,7 +29,7 @@ public final class LongFireworkHack extends Hack implements UpdateListener
 	private final SliderSetting length = new SliderSetting("Length",
 		"How many times longer than normal your fireworks should boost you.\n"
 			+ "1x is the normal duration.",
-		2, 1, 5, 0.1, ValueDisplay.DECIMAL.withSuffix("x"));
+		2, 1, 10, 0.1, ValueDisplay.DECIMAL.withSuffix("x"));
 	
 	private final Map<Integer, Pending> pending = new HashMap<>();
 	
