@@ -7,14 +7,13 @@
  */
 package net.wurstclient.mixin.longfirework;
 
-import java.util.function.IntConsumer;
-
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
+import it.unimi.dsi.fastutil.ints.IntConsumer;
 import it.unimi.dsi.fastutil.ints.IntList;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.wurstclient.WurstClient;
