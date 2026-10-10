@@ -19,6 +19,8 @@ import net.wurstclient.DontBlock;
 import net.wurstclient.SearchTags;
 import net.wurstclient.other_feature.OtherFeature;
 import net.wurstclient.settings.EnumSetting;
+import net.wurstclient.settings.SliderSetting;
+import net.wurstclient.settings.SliderSetting.ValueDisplay;
 
 @SearchTags({"wurst options", "settings"})
 @DontBlock
@@ -31,10 +33,22 @@ public final class WurstOptionsOtf extends OtherFeature
 		"description.wurst.setting.wurstoptions.location", Location.values(),
 		Location.GAME_MENU);
 	
+	private final SliderSetting lineWidth = new SliderSetting("Line width",
+		"How thick the lines drawn by ESP, tracers, Navigator and other"
+			+ " hacks are, in pixels.\n\n"
+			+ "Lower this if lines look too thick compared to older versions.",
+		2, 0.5, 4, 0.25, ValueDisplay.DECIMAL.withSuffix(" px"));
+	
 	public WurstOptionsOtf()
 	{
 		super("WurstOptions", "description.wurst.other_feature.wurstoptions");
 		addSetting(location);
+		addSetting(lineWidth);
+	}
+	
+	public float getLineWidth()
+	{
+		return lineWidth.getValueF();
 	}
 	
 	public boolean isVisibleInGameMenu()
