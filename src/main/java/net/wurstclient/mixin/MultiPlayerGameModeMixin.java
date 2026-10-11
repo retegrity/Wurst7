@@ -82,8 +82,17 @@ public abstract class MultiPlayerGameModeMixin implements IMultiPlayerGameMode
 	private float onStartDestroyProgress(BlockState state, Player player,
 		BlockGetter level, BlockPos pos, Operation<Float> original)
 	{
-		return original.call(state, player, level, pos)
-			* WurstClient.INSTANCE.getHax().fastBreakHack.getHardnessModifier();
+		float progress = original.call(state, player, level, pos);
+		float modifier =
+			WurstClient.INSTANCE.getHax().fastBreakHack.getHardnessModifier();
+		if(modifier == 1)
+			return progress;
+			
+		// Don't let the first tick finish the block on the client alone. The
+		// server wouldn't see the block as broken yet, so it would put the
+		// block back. Letting it finish on the next tick sends the usual
+		// "stop destroying" packet instead, which the server accepts.
+		return Math.min(progress * modifier, progress < 1 ? 0.999F : progress);
 	}
 	
 	@Inject(
