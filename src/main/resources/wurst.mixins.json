@@ -37,6 +37,8 @@
     "ServerNameResolverMixin",
     "SkinManagerMixin",
     "StatsScreenMixin",
+    "SplashRendererMixin",
+    "LogoRendererMixin",
     "TitleScreenMixin",
     "anticactus.CactusBlockMixin",
     "antientitypush.EntityMixin",
