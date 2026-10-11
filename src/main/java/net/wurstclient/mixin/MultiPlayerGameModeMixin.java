@@ -7,6 +7,9 @@
  */
 package net.wurstclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -29,6 +32,9 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.block.state.BlockState;
+import net.wurstclient.WurstClient;
 import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -54,6 +60,30 @@ public abstract class MultiPlayerGameModeMixin implements IMultiPlayerGameMode
 		CallbackInfoReturnable<Boolean> cir)
 	{
 		EventManager.fire(new BlockBreakingProgressEvent(pos, direction));
+	}
+	
+	/**
+	 * Applies FastBreak's Normal mode speed multiplier.
+	 */
+	@WrapOperation(
+		method = "continueDestroyBlock(Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/Direction;)Z",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/world/level/block/state/BlockState;getDestroyProgress(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)F"))
+	private float onContinueDestroyProgress(BlockState state, Player player,
+		BlockGetter level, BlockPos pos, Operation<Float> original)
+	{
+		return original.call(state, player, level, pos)
+			* WurstClient.INSTANCE.getHax().fastBreakHack.getHardnessModifier();
+	}
+	
+	@WrapOperation(method = "lambda$startDestroyBlock$1",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/world/level/block/state/BlockState;getDestroyProgress(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/level/BlockGetter;Lnet/minecraft/core/BlockPos;)F"))
+	private float onStartDestroyProgress(BlockState state, Player player,
+		BlockGetter level, BlockPos pos, Operation<Float> original)
+	{
+		return original.call(state, player, level, pos)
+			* WurstClient.INSTANCE.getHax().fastBreakHack.getHardnessModifier();
 	}
 	
 	@Inject(
