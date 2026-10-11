@@ -53,4 +53,15 @@ public abstract class SplashRendererMixin
 	{
 		return WurstClient.INSTANCE.isEnabled() ? 72F : original;
 	}
+	
+	/**
+	 * Wurst 6 drew the text with its top edge at the pivot, while newer
+	 * versions start 8 units higher.
+	 */
+	@ModifyConstant(method = "extractRenderState",
+		constant = @Constant(intValue = -8))
+	private int modifySplashTextY(int original)
+	{
+		return WurstClient.INSTANCE.isEnabled() ? 0 : original;
+	}
 }
