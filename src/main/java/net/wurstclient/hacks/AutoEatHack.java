@@ -229,8 +229,14 @@ public final class AutoEatHack extends Hack implements UpdateListener
 			// filter out non-food items
 			if(!stack.has(DataComponents.FOOD))
 				continue;
+				
+			// Some items (like fish buckets) have food properties but can't
+			// actually be eaten, because they have no consumable component.
+			Consumable consumable = stack.get(DataComponents.CONSUMABLE);
+			if(consumable == null)
+				continue;
 			
-			if(!isAllowedFood(stack.get(DataComponents.CONSUMABLE)))
+			if(!isAllowedFood(consumable))
 				continue;
 			
 			FoodProperties food = stack.get(DataComponents.FOOD);
