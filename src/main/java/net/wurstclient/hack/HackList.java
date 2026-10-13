@@ -163,6 +163,7 @@ public final class HackList implements UpdateListener
 	public final RainbowUiHack rainbowUiHack = new RainbowUiHack();
 	public final AntiBotHack antiBotHack = new AntiBotHack();
 	public final DetectorHack detectorHack = new DetectorHack();
+	public final DiscordRpcHack discordRpcHack = new DiscordRpcHack();
 	public final ReachHack reachHack = new ReachHack();
 	public final RotationsHack rotationsHack = new RotationsHack();
 	public final RemoteViewHack remoteViewHack = new RemoteViewHack();
@@ -233,6 +234,15 @@ public final class HackList implements UpdateListener
 	{
 		enabledHacksFile.load(this);
 		eventManager.remove(UpdateListener.class, this);
+	}
+	
+	/**
+	 * Enables hacks that should already be active in the main menu, instead of
+	 * waiting for the first world like all other hacks do.
+	 */
+	public void enableEarlyHax()
+	{
+		enabledHacksFile.enableEarly(this, discordRpcHack);
 	}
 	
 	public void saveEnabledHax()
