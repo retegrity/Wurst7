@@ -163,6 +163,7 @@ public final class HackList implements UpdateListener
 	public final RainbowUiHack rainbowUiHack = new RainbowUiHack();
 	public final AntiBotHack antiBotHack = new AntiBotHack();
 	public final DetectorHack detectorHack = new DetectorHack();
+	public final DiscordRpcHack discordRpcHack = new DiscordRpcHack();
 	public final ReachHack reachHack = new ReachHack();
 	public final RotationsHack rotationsHack = new RotationsHack();
 	public final RemoteViewHack remoteViewHack = new RemoteViewHack();
