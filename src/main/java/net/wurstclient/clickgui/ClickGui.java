@@ -219,8 +219,44 @@ public final class ClickGui
 			leftMouseButtonPressed = false;
 	}
 	
+	/**
+	 * Lets the popup under the mouse (if any) handle a scroll event.
+	 *
+	 * @return true if the mouse was over a popup, so the scroll event
+	 *         shouldn't scroll anything else
+	 */
+	public boolean handlePopupMouseScroll(double mouseX, double mouseY,
+		double delta)
+	{
+		closeInvalidPopups();
+		
+		for(int i = popups.size() - 1; i >= 0; i--)
+		{
+			Popup popup = popups.get(i);
+			Component owner = popup.getOwner();
+			Window parent = owner.getParent();
+			
+			int x1 = parent.getX() + owner.getX() + popup.getX();
+			int y1 = parent.getY() + 13 + parent.getScrollOffset()
+				+ owner.getY() + popup.getY();
+			int x2 = x1 + popup.getWidth();
+			int y2 = y1 + popup.getHeight();
+			
+			if(mouseX < x1 || mouseY < y1 || mouseX >= x2 || mouseY >= y2)
+				continue;
+			
+			popup.handleMouseScroll(delta);
+			return true;
+		}
+		
+		return false;
+	}
+	
 	public void handleMouseScroll(double mouseX, double mouseY, double delta)
 	{
+		if(handlePopupMouseScroll(mouseX, mouseY, delta))
+			return;
+		
 		int dWheel = (int)delta * 4;
 		if(dWheel == 0)
 			return;

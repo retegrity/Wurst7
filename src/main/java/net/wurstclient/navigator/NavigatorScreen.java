@@ -111,6 +111,11 @@ public abstract class NavigatorScreen extends Screen
 	public final boolean mouseScrolled(double mouseX, double mouseY,
 		double horizontalAmount, double verticalAmount)
 	{
+		// drop-down menus that are too long scroll on their own
+		if(WurstClient.INSTANCE.getGui().handlePopupMouseScroll(mouseX, mouseY,
+			verticalAmount))
+			return true;
+		
 		// scrollbar
 		if(!scrollbarLocked)
 		{
