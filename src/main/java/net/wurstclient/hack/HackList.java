@@ -236,6 +236,15 @@ public final class HackList implements UpdateListener
 		eventManager.remove(UpdateListener.class, this);
 	}
 	
+	/**
+	 * Enables hacks that should already be active in the main menu, instead of
+	 * waiting for the first world like all other hacks do.
+	 */
+	public void enableEarlyHax()
+	{
+		enabledHacksFile.enableEarly(this, discordRpcHack);
+	}
+	
 	public void saveEnabledHax()
 	{
 		enabledHacksFile.save(this);
