@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 import com.mojang.blaze3d.vertex.PoseStack;
 
 import net.minecraft.world.InteractionHand;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
@@ -87,8 +88,19 @@ public final class KillauraHack extends Hack
 				+ "Slower but can help with anti-cheat plugins.",
 			false);
 	
+	private final CheckboxSetting movementCorrection = new CheckboxSetting(
+		"Movement correction",
+		"Calculates your movement from the rotation that the server sees"
+			+ " instead of where your camera points, and adjusts your keys so"
+			+ " you still walk the way you intended.\n\n"
+			+ "Helps against anti-cheat plugins that check whether your"
+			+ " movement matches your rotation.",
+		false);
+	
 	private final EntityFilterList entityFilters =
 		EntityFilterList.genericMeleeCombat();
+	
+	private static final int ROTATION_TICKS = 5;
 	
 	private Entity target;
 	private Entity renderTarget;
@@ -107,6 +119,7 @@ public final class KillauraHack extends Hack
 		addSetting(damageIndicator);
 		addSetting(pauseOnContainers);
 		addSetting(checkLOS);
+		addSetting(movementCorrection);
 		
 		entityFilters.forEach(this::addSetting);
 	}
@@ -140,14 +153,16 @@ public final class KillauraHack extends Hack
 		
 		target = null;
 		renderTarget = null;
+		WURST.getRotationFaker().clearManagedRotation();
 	}
 	
 	@Override
 	public void onUpdate()
 	{
 		speed.updateTimer();
-		if(!speed.isTimeToAttack())
-			return;
+		
+		target = null;
+		renderTarget = null;
 		
 		if(pauseOnContainers.shouldPause())
 			return;
@@ -163,21 +178,43 @@ public final class KillauraHack extends Hack
 		
 		stream = entityFilters.applyTo(stream);
 		
-		target = stream.min(priority.getSelected().comparator).orElse(null);
-		renderTarget = target;
-		if(target == null)
+		Entity candidate =
+			stream.min(priority.getSelected().comparator).orElse(null);
+		renderTarget = candidate;
+		if(candidate == null)
 			return;
 		
-		WURST.getHax().autoSwordHack.setSlot(target);
-		
-		Vec3 hitVec = target.getBoundingBox().getCenter();
+		// aim at the closest point of the hitbox
+		Vec3 hitVec = getClosestPoint(candidate.getBoundingBox());
 		if(checkLOS.isChecked() && !BlockUtils.hasLineOfSight(hitVec))
-		{
-			target = null;
 			return;
-		}
 		
-		WURST.getRotationFaker().faceVectorPacket(hitVec);
+		// keep looking at the target on every tick, not just when attacking
+		WURST.getRotationFaker().faceVectorSilently(hitVec, ROTATION_TICKS,
+			movementCorrection.isChecked());
+		
+		if(!speed.isTimeToAttack())
+			return;
+		
+		target = candidate;
+		WURST.getHax().autoSwordHack.setSlot(target);
+	}
+	
+	private Vec3 getClosestPoint(AABB box)
+	{
+		Vec3 eyes = RotationUtils.getEyesPos();
+		
+		// slightly smaller box, so the point is never on the very edge
+		AABB inner = box.deflate(0.01);
+		Vec3 closest = new Vec3(Mth.clamp(eyes.x, inner.minX, inner.maxX),
+			Mth.clamp(eyes.y, inner.minY, inner.maxY),
+			Mth.clamp(eyes.z, inner.minZ, inner.maxZ));
+		
+		// eyes inside the hitbox, so aim at the center
+		if(closest.distanceToSqr(eyes) < 1e-8)
+			return box.getCenter();
+		
+		return closest;
 	}
 	
 	@Override
