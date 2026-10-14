@@ -18,6 +18,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.UserApiService;
@@ -25,6 +27,7 @@ import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.blaze3d.platform.WindowEventHandler;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.Options;
 import net.minecraft.client.User;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.MultiPlayerGameMode;
@@ -55,6 +58,9 @@ public abstract class MinecraftMixin
 	public MultiPlayerGameMode gameMode;
 	@Shadow
 	public LocalPlayer player;
+	@Shadow
+	@Final
+	public Options options;
 	
 	@Unique
 	private YggdrasilAuthenticationService wurstAuthenticationService;
@@ -122,6 +128,55 @@ public abstract class MinecraftMixin
 		
 		if(event.isCancelled())
 			ci.cancel();
+	}
+	
+	/**
+	 * MultiActions: lets the player attack and break blocks while using an
+	 * item. The vanilla release logic is kept so that items still stop being
+	 * used when the use key is let go.
+	 */
+	@WrapOperation(method = "handleKeybinds()V",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/player/LocalPlayer;isUsingItem()Z",
+			ordinal = 0))
+	private boolean wurstMultiActionsHandleKeybinds(LocalPlayer instance,
+		Operation<Boolean> original)
+	{
+		boolean using = original.call(instance);
+		if(!using
+			|| !WurstClient.INSTANCE.getHax().multiActionsHack.isEnabled())
+			return using;
+		
+		if(!options.keyUse.isDown())
+			gameMode.releaseUsingItem(instance);
+		
+		return false;
+	}
+	
+	@WrapOperation(method = "continueAttack(Z)V",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/player/LocalPlayer;isUsingItem()Z",
+			ordinal = 0))
+	private boolean wurstMultiActionsContinueAttack(LocalPlayer instance,
+		Operation<Boolean> original)
+	{
+		if(WurstClient.INSTANCE.getHax().multiActionsHack.isEnabled())
+			return false;
+		
+		return original.call(instance);
+	}
+	
+	@WrapOperation(method = "startUseItem()V",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;isDestroying()Z",
+			ordinal = 0))
+	private boolean wurstMultiActionsStartUseItem(MultiPlayerGameMode instance,
+		Operation<Boolean> original)
+	{
+		if(WurstClient.INSTANCE.getHax().multiActionsHack.isEnabled())
+			return false;
+		
+		return original.call(instance);
 	}
 	
 	@Inject(method = "pickBlockOrEntity()V", at = @At("HEAD"))
