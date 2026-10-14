@@ -8,6 +8,7 @@
 package net.wurstclient.hacks;
 
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,11 +16,14 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MaceItem;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.wurstclient.Category;
 import net.wurstclient.SearchTags;
+import net.wurstclient.events.LeftClickListener;
 import net.wurstclient.events.PlayerAttacksEntityListener;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.hack.Hack;
@@ -33,7 +37,7 @@ import net.wurstclient.util.InventoryUtils;
 	"auto swap", "auto shield break", "auto mace", "disable shield",
 	"item swap", "hotbar swap", "item saver", "durability saver"})
 public final class AttributeSwapHack extends Hack
-	implements PlayerAttacksEntityListener, UpdateListener
+	implements PlayerAttacksEntityListener, UpdateListener, LeftClickListener
 {
 	private final EnumSetting<Mode> mode = new EnumSetting<>("Mode",
 		"Simple: swaps to a fixed hotbar slot on attack.\n"
@@ -64,6 +68,11 @@ public final class AttributeSwapHack extends Hack
 		"Swaps to a non-damageable item to save main weapon durability (Smart mode).",
 		true);
 	
+	private final CheckboxSetting lungeSwap = new CheckboxSetting("Lunge swap",
+		"Swaps to a spear enchanted with lunge whenever you swing at air with"
+			+ " nothing in your hand.",
+		false);
+	
 	private final CheckboxSetting onlyWithKillAura = new CheckboxSetting(
 		"Only with Killaura", "Only activate when Killaura is enabled.", false);
 	
@@ -82,6 +91,7 @@ public final class AttributeSwapHack extends Hack
 		addSetting(shieldBreaker);
 		addSetting(itemSaver);
 		addSetting(breachSwapping);
+		addSetting(lungeSwap);
 		addSetting(onlyWithKillAura);
 	}
 	
@@ -94,6 +104,7 @@ public final class AttributeSwapHack extends Hack
 		
 		EVENTS.add(PlayerAttacksEntityListener.class, this);
 		EVENTS.add(UpdateListener.class, this);
+		EVENTS.add(LeftClickListener.class, this);
 	}
 	
 	@Override
@@ -101,6 +112,7 @@ public final class AttributeSwapHack extends Hack
 	{
 		EVENTS.remove(PlayerAttacksEntityListener.class, this);
 		EVENTS.remove(UpdateListener.class, this);
+		EVENTS.remove(LeftClickListener.class, this);
 		
 		if(awaitingBack)
 		{
@@ -119,6 +131,31 @@ public final class AttributeSwapHack extends Hack
 			return;
 		
 		performSwap(target);
+	}
+	
+	@Override
+	public void onLeftClick(LeftClickEvent event)
+	{
+		if(!lungeSwap.isChecked() || awaitingBack)
+			return;
+		
+		if(!MC.player.getMainHandItem().isEmpty())
+			return;
+		
+		// only when swinging at air, not at blocks or entities
+		HitResult hit = MC.hitResult;
+		if(hit != null && hit.getType() != HitResult.Type.MISS)
+			return;
+		
+		int slot = InventoryUtils.indexOf(s -> s.is(ItemTags.SPEARS)
+			&& getEnchantLevel(s, Enchantments.LUNGE) > 0, 9);
+		if(slot == -1)
+			return;
+		
+		doSwap(slot);
+		
+		// the server needs to know about the new slot before the swing
+		MC.player.connection.send(new ServerboundSetCarriedItemPacket(slot));
 	}
 	
 	@Override
