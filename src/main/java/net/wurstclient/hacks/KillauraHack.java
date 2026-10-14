@@ -8,6 +8,7 @@
 package net.wurstclient.hacks;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
@@ -44,10 +45,19 @@ import net.wurstclient.util.RotationUtils;
 public final class KillauraHack extends Hack
 	implements UpdateListener, HandleInputListener, RenderListener
 {
-	private final SliderSetting range = new SliderSetting("Range",
+	private final SliderSetting range = new SliderSetting("Attack range",
 		"Determines how far Killaura will reach to attack entities.\n"
 			+ "Anything that is further away than the specified value will not be attacked.",
 		5, 1, 10, 0.05, ValueDisplay.DECIMAL);
+	
+	private final SliderSetting targetRange = new SliderSetting("Target range",
+		"How many blocks beyond the attack range Killaura will already turn"
+			+ " towards entities.\n\n"
+			+ "Entities in this extra range are not attacked yet, but your"
+			+ " rotation is already facing them when they come into attack"
+			+ " range.",
+		0, 0, 5, 0.05,
+		ValueDisplay.DECIMAL.withSuffix(" blocks").withLabel(0, "off"));
 	
 	private final AttackSpeedSliderSetting speed =
 		new AttackSpeedSliderSetting();
@@ -111,6 +121,7 @@ public final class KillauraHack extends Hack
 		setCategory(Category.COMBAT);
 		
 		addSetting(range);
+		addSetting(targetRange);
 		addSetting(speed);
 		addSetting(speedRandMS);
 		addSetting(priority);
@@ -168,18 +179,30 @@ public final class KillauraHack extends Hack
 			return;
 		
 		Stream<Entity> stream = EntityUtils.getMeleeAttackableEntities();
-		double rangeSq = range.getValueSq();
-		stream =
-			stream.filter(e -> EntityUtils.distanceToHitboxSq(e) <= rangeSq);
 		
 		if(fov.getValue() < 360.0)
 			stream = stream.filter(e -> RotationUtils.getAngleToLookVec(
 				e.getBoundingBox().getCenter()) <= fov.getValue() / 2.0);
 		
-		stream = entityFilters.applyTo(stream);
+		List<Entity> entities = entityFilters.applyTo(stream).toList();
 		
-		Entity candidate =
-			stream.min(priority.getSelected().comparator).orElse(null);
+		// Entities within attack range come first. Entities in the extra
+		// target range are only faced, not attacked.
+		double attackRangeSq = range.getValueSq();
+		double aimRange = range.getValue() + targetRange.getValue();
+		double aimRangeSq = aimRange * aimRange;
+		
+		Comparator<Entity> comparator = priority.getSelected().comparator;
+		Entity candidate = entities.stream()
+			.filter(e -> EntityUtils.distanceToHitboxSq(e) <= attackRangeSq)
+			.min(comparator).orElse(null);
+		boolean inAttackRange = candidate != null;
+		
+		if(candidate == null)
+			candidate = entities.stream()
+				.filter(e -> EntityUtils.distanceToHitboxSq(e) <= aimRangeSq)
+				.min(comparator).orElse(null);
+		
 		renderTarget = candidate;
 		if(candidate == null)
 			return;
@@ -193,7 +216,7 @@ public final class KillauraHack extends Hack
 		WURST.getRotationFaker().faceVectorSilently(hitVec, ROTATION_TICKS,
 			movementCorrection.isChecked());
 		
-		if(!speed.isTimeToAttack())
+		if(!inAttackRange || !speed.isTimeToAttack())
 			return;
 		
 		target = candidate;
