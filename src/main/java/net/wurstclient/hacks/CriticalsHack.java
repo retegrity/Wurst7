@@ -175,7 +175,9 @@ public final class CriticalsHack extends Hack
 		if(player.getAttackStrengthScale(0.5F) <= 0.9F)
 			return false;
 		
-		return !player.isSprinting();
+		// sprint doesn't block crits if the server can't see it
+		return !player.isSprinting()
+			|| WURST.getHax().antiHungerHack.isHidingSprint();
 	}
 	
 	private boolean isInCobweb(LocalPlayer player)
