@@ -8,7 +8,6 @@
 package net.wurstclient.hacks;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.protocol.game.ServerboundSetCarriedItemPacket;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -151,11 +150,10 @@ public final class AttributeSwapHack extends Hack
 			&& getEnchantLevel(s, Enchantments.LUNGE) > 0, 9);
 		if(slot == -1)
 			return;
-		
+			
+		// vanilla sends the new slot to the server right before the stab
+		// (MultiPlayerGameMode.ensureHasSentCarriedItem), so no extra packet
 		doSwap(slot);
-		
-		// the server needs to know about the new slot before the swing
-		MC.player.connection.send(new ServerboundSetCarriedItemPacket(slot));
 	}
 	
 	@Override
