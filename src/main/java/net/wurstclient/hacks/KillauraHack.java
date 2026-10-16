@@ -178,6 +178,10 @@ public final class KillauraHack extends Hack
 		if(pauseOnContainers.shouldPause())
 			return;
 		
+		// don't fight over the rotation with Clutch
+		if(WURST.getHax().clutchHack.isClutching())
+			return;
+		
 		Stream<Entity> stream = EntityUtils.getMeleeAttackableEntities();
 		
 		if(fov.getValue() < 360.0)

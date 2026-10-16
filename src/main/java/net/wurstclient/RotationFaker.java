@@ -33,6 +33,11 @@ public final class RotationFaker
 	private int managedTicksLeft;
 	private boolean movementCorrection;
 	
+	// when > 0, an expired managed rotation turns back to the camera rotation
+	// at this speed (degrees per tick) instead of snapping back
+	private float releaseSpeed;
+	private boolean releasing;
+	
 	@Override
 	public void onPreMotion()
 	{
@@ -50,9 +55,6 @@ public final class RotationFaker
 			yaw = managedYaw;
 			pitch = managedPitch;
 			
-			if(--managedTicksLeft < 0)
-				clearManagedRotation();
-			
 		}else
 			return;
 		
@@ -66,14 +68,35 @@ public final class RotationFaker
 	@Override
 	public void onPostMotion()
 	{
-		if(!applied)
+		LocalPlayer player = WurstClient.MC.player;
+		if(applied)
+		{
+			player.setYRot(realYaw);
+			player.setXRot(realPitch);
+			fakeRotation = false;
+			applied = false;
+		}
+		
+		// Update the managed rotation for the next tick here, after this
+		// tick's packet was sent, so that next tick's movement (which happens
+		// before PreMotion) and next tick's packet use the same rotation.
+		// Otherwise the anti-cheat's movement simulation doesn't match.
+		if(!managed)
 			return;
 		
-		LocalPlayer player = WurstClient.MC.player;
-		player.setYRot(realYaw);
-		player.setXRot(realPitch);
-		fakeRotation = false;
-		applied = false;
+		if(!releasing && --managedTicksLeft < 0)
+		{
+			if(releaseSpeed <= 0)
+			{
+				clearManagedRotation();
+				return;
+			}
+			
+			releasing = true;
+		}
+		
+		if(releasing)
+			updateRelease(player);
 	}
 	
 	/**
@@ -89,20 +112,55 @@ public final class RotationFaker
 	public void faceVectorSilently(Vec3 vec, int ticksUntilReset,
 		boolean movementCorrection)
 	{
+		turnTowards(vec, 180, ticksUntilReset, movementCorrection, 0);
+	}
+	
+	/**
+	 * Like {@link #faceVectorSilently(Vec3, int, boolean)}, but turns by at
+	 * most the given number of degrees per tick. Once the rotation expires,
+	 * it turns back to the camera rotation at the given release speed instead
+	 * of snapping back.
+	 */
+	public void faceVectorSmoothly(Vec3 vec, float maxTurn, int ticksUntilReset,
+		boolean movementCorrection, float releaseSpeed)
+	{
+		turnTowards(vec, maxTurn, ticksUntilReset, movementCorrection,
+			releaseSpeed);
+	}
+	
+	private void turnTowards(Vec3 vec, float maxTurn, int ticksUntilReset,
+		boolean movementCorrection, float releaseSpeed)
+	{
 		LocalPlayer player = WurstClient.MC.player;
 		Rotation needed = RotationUtils.getNeededRotations(vec);
 		
 		float fromYaw = managed ? managedYaw : player.getYRot();
 		float fromPitch = managed ? managedPitch : player.getXRot();
 		
-		// linear turn with a limit of 180° on each axis
-		float diffYaw = Mth.wrapDegrees(needed.yaw() - fromYaw);
-		float diffPitch = Mth.wrapDegrees(needed.pitch() - fromPitch);
+		// wrapped, so it takes the shortest way to the target
+		float toYaw = fromYaw + Mth.wrapDegrees(needed.yaw() - fromYaw);
+		turnFrom(fromYaw, fromPitch, toYaw, needed.pitch(), maxTurn);
+		managedTicksLeft = ticksUntilReset;
+		this.movementCorrection = movementCorrection;
+		this.releaseSpeed = releaseSpeed;
+		releasing = false;
+		managed = true;
+	}
+	
+	/**
+	 * Linear turn with the given limit on each axis, corrected for the mouse
+	 * sensitivity grid. Stores the result in managedYaw/managedPitch.
+	 */
+	private void turnFrom(float fromYaw, float fromPitch, float toYaw,
+		float toPitch, float maxTurn)
+	{
+		float diffYaw = toYaw - fromYaw;
+		float diffPitch = toPitch - fromPitch;
 		float length = (float)Math.hypot(diffYaw, diffPitch);
 		if(length > 1e-5F)
 		{
-			float maxYaw = Math.abs(diffYaw / length) * 180;
-			float maxPitch = Math.abs(diffPitch / length) * 180;
+			float maxYaw = Math.abs(diffYaw / length) * maxTurn;
+			float maxPitch = Math.abs(diffPitch / length) * maxTurn;
 			diffYaw = Mth.clamp(diffYaw, -maxYaw, maxYaw);
 			diffPitch = Mth.clamp(diffPitch, -maxPitch, maxPitch);
 		}
@@ -114,14 +172,34 @@ public final class RotationFaker
 		
 		managedYaw = fromYaw + diffYaw;
 		managedPitch = Mth.clamp(fromPitch + diffPitch, -90, 90);
-		managedTicksLeft = ticksUntilReset;
-		this.movementCorrection = movementCorrection;
-		managed = true;
+	}
+	
+	/**
+	 * Turns the managed rotation back towards the camera rotation and clears
+	 * it once it has arrived.
+	 */
+	private void updateRelease(LocalPlayer player)
+	{
+		// not wrapped, so the yaw ends up at exactly the camera's yaw value
+		// and doesn't jump by 360° when the managed rotation is cleared
+		// (Grim's AimModulo360 check)
+		float gcd = getMouseGcd();
+		float realYaw = player.getYRot();
+		float realPitch = player.getXRot();
+		if(Math.abs(realYaw - managedYaw) <= gcd
+			&& Math.abs(realPitch - managedPitch) <= gcd)
+		{
+			clearManagedRotation();
+			return;
+		}
+		
+		turnFrom(managedYaw, managedPitch, realYaw, realPitch, releaseSpeed);
 	}
 	
 	public void clearManagedRotation()
 	{
 		managed = false;
+		releasing = false;
 		movementCorrection = false;
 	}
 	
