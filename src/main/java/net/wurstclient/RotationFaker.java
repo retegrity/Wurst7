@@ -7,6 +7,8 @@
  */
 package net.wurstclient;
 
+import java.util.Random;
+
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -37,6 +39,10 @@ public final class RotationFaker
 	// at this speed (degrees per tick) instead of snapping back
 	private float releaseSpeed;
 	private boolean releasing;
+	
+	private final Random random = new Random();
+	private float lastTurnYawDelta;
+	private float lastTurnPitchDelta;
 	
 	@Override
 	public void onPreMotion()
@@ -137,9 +143,18 @@ public final class RotationFaker
 		float fromYaw = managed ? managedYaw : player.getYRot();
 		float fromPitch = managed ? managedPitch : player.getXRot();
 		
+		// Vary limited turn speeds a little on every tick. With a fixed speed,
+		// every long turn moves by exactly the same amount per tick, and
+		// blocks placed in the middle of such turns get flagged by Grim's
+		// DuplicateRotPlace check.
+		if(maxTurn < 180)
+			maxTurn *= 0.85F + random.nextFloat() * 0.3F;
+		
 		// wrapped, so it takes the shortest way to the target
 		float toYaw = fromYaw + Mth.wrapDegrees(needed.yaw() - fromYaw);
 		turnFrom(fromYaw, fromPitch, toYaw, needed.pitch(), maxTurn);
+		lastTurnYawDelta = managedYaw - fromYaw;
+		lastTurnPitchDelta = managedPitch - fromPitch;
 		managedTicksLeft = ticksUntilReset;
 		this.movementCorrection = movementCorrection;
 		this.releaseSpeed = releaseSpeed;
@@ -219,6 +234,22 @@ public final class RotationFaker
 	public boolean isMovementCorrectionActive()
 	{
 		return managed && movementCorrection;
+	}
+	
+	/**
+	 * How much the last call to one of the face methods changed the yaw.
+	 */
+	public float getLastTurnYawDelta()
+	{
+		return lastTurnYawDelta;
+	}
+	
+	/**
+	 * How much the last call to one of the face methods changed the pitch.
+	 */
+	public float getLastTurnPitchDelta()
+	{
+		return lastTurnPitchDelta;
 	}
 	
 	public float getManagedYaw()

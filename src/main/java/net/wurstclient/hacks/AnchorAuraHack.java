@@ -41,6 +41,8 @@ import net.wurstclient.settings.filterlists.EntityFilterList;
 import net.wurstclient.util.BlockUtils;
 import net.wurstclient.util.ChatUtils;
 import net.wurstclient.util.EntityUtils;
+import net.wurstclient.util.FaceAimPoint;
+import net.wurstclient.util.PlaceRotationGuard;
 import net.wurstclient.util.Rotation;
 import net.wurstclient.util.RotationUtils;
 
@@ -115,6 +117,8 @@ public final class AnchorAuraHack extends Hack implements UpdateListener
 	private int delay;
 	private int originalSlot = -1;
 	private boolean busy;
+	private final FaceAimPoint aimPoint = new FaceAimPoint();
+	private final PlaceRotationGuard rotationGuard = new PlaceRotationGuard();
 	
 	public AnchorAuraHack()
 	{
@@ -208,9 +212,12 @@ public final class AnchorAuraHack extends Hack implements UpdateListener
 		busy = true;
 		
 		// keep aiming during the delay, but don't click
-		WURST.getRotationFaker().faceVectorSmoothly(action.hitVec(),
+		WURST.getRotationFaker().faceVectorSmoothly(
+			aimPoint.get(action.clickPos(), action.side(), action.hitVec()),
 			turnSpeed.getValueF(), 2, movementCorrection.isChecked(),
 			returnSpeed.getValueF());
+		rotationGuard.onTurn(WURST.getRotationFaker().getLastTurnYawDelta(),
+			WURST.getRotationFaker().getLastTurnPitchDelta());
 		
 		if(delay > 0)
 		{
@@ -230,10 +237,20 @@ public final class AnchorAuraHack extends Hack implements UpdateListener
 			|| !hit.getBlockPos().equals(action.clickPos())
 			|| hit.getDirection() != action.side())
 			return;
+			
+		// Grim's DuplicateRotPlace flags placing twice after the same yaw
+		// change, so aim at a different spot and try again next tick
+		if(!rotationGuard.canPlace())
+		{
+			aimPoint.next();
+			return;
+		}
 		
 		selectSlot(action.slot());
 		if(!click(hit))
 			return;
+		
+		rotationGuard.onPlaced();
 		
 		if(action.type() == ActionType.DETONATE)
 		{
@@ -242,6 +259,7 @@ public final class AnchorAuraHack extends Hack implements UpdateListener
 			anchorPos = null;
 		}
 		
+		aimPoint.next();
 		delay = actionDelay.getValueI();
 	}
 	

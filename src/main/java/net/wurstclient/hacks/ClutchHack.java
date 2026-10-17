@@ -38,6 +38,8 @@ import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.util.BlockUtils;
+import net.wurstclient.util.FaceAimPoint;
+import net.wurstclient.util.PlaceRotationGuard;
 import net.wurstclient.util.Rotation;
 import net.wurstclient.util.RotationUtils;
 
@@ -98,6 +100,8 @@ public final class ClutchHack extends Hack implements UpdateListener
 	private static final int LANDING_TICKS = 10;
 	
 	private boolean clutching;
+	private final FaceAimPoint aimPoint = new FaceAimPoint();
+	private final PlaceRotationGuard rotationGuard = new PlaceRotationGuard();
 	private int originalSlot = -1;
 	private int usedSlot = -1;
 	private int idleTicks;
@@ -210,9 +214,13 @@ public final class ClutchHack extends Hack implements UpdateListener
 		clutching = true;
 		idleTicks = 0;
 		
-		WURST.getRotationFaker().faceVectorSmoothly(placement.hitVec(),
+		WURST.getRotationFaker().faceVectorSmoothly(
+			aimPoint.get(placement.neighbor(), placement.side(),
+				placement.hitVec()),
 			turnSpeed.getValueF(), 2, movementCorrection.isChecked(),
 			returnSpeed.getValueF());
+		rotationGuard.onTurn(WURST.getRotationFaker().getLastTurnYawDelta(),
+			WURST.getRotationFaker().getLastTurnPitchDelta());
 		
 		// only place once the rotation that will be sent this tick actually
 		// looks at the block, so the placement matches what the server sees
@@ -220,9 +228,21 @@ public final class ClutchHack extends Hack implements UpdateListener
 			WURST.getRotationFaker().getServerPitch());
 		if(!hits(hit, placement))
 			return;
+			
+		// Grim's DuplicateRotPlace flags placing twice after the same yaw
+		// change, so aim at a different spot and try again next tick
+		if(!rotationGuard.canPlace())
+		{
+			aimPoint.next();
+			return;
+		}
 		
 		if(place(player, blockSlot, hit))
+		{
+			rotationGuard.onPlaced();
 			placedBlocks.add(placement.pos());
+			aimPoint.next();
+		}
 	}
 	
 	private void stopClutching()
