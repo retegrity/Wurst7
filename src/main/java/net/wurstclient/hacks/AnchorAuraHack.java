@@ -218,6 +218,10 @@ public final class AnchorAuraHack extends Hack implements UpdateListener
 			return;
 		}
 		
+		// a real player couldn't click while moving a totem
+		if(WURST.getHax().autoTotemHack.isBusy())
+			return;
+			
 		// only click once the rotation that will be sent this tick actually
 		// looks at the right face, so the click matches what the server sees
 		BlockHitResult hit = raycast(WURST.getRotationFaker().getServerYaw(),

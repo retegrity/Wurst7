@@ -255,7 +255,7 @@ public final class KillauraHack extends Hack
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
-		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+		if(AttackUtils.shouldDelayAttack())
 			return;
 		
 		AttackUtils.attackAndSwing(target,

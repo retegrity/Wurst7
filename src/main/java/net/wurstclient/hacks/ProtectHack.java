@@ -278,7 +278,7 @@ public final class ProtectHack extends Hack
 		{
 			WURST.getHax().autoSwordHack.setSlot(enemy);
 			
-			if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			if(AttackUtils.shouldDelayAttack())
 				return;
 			
 			// check cooldown

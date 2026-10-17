@@ -133,7 +133,7 @@ public final class ClickAuraHack extends Hack
 		
 		WURST.getHax().autoSwordHack.setSlot(target);
 		
-		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+		if(AttackUtils.shouldDelayAttack())
 			return;
 		
 		// face entity

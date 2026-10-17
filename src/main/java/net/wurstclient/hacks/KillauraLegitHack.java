@@ -222,7 +222,7 @@ public final class KillauraLegitHack extends Hack implements UpdateListener,
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
-		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+		if(AttackUtils.shouldDelayAttack())
 			return;
 		
 		// attack entity

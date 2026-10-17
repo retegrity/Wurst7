@@ -159,7 +159,7 @@ public final class TriggerBotHack extends Hack
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
-		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+		if(AttackUtils.shouldDelayAttack())
 			return;
 		
 		if(simulateMouseClick.isChecked())

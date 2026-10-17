@@ -37,6 +37,16 @@ public enum AttackUtils
 	}
 	
 	/**
+	 * Returns true if combat hacks should wait this tick, e.g. because
+	 * BlockHit is blocking or AutoTotem is moving a totem.
+	 */
+	public static boolean shouldDelayAttack()
+	{
+		return WurstClient.INSTANCE.getHax().blockHitHack.shouldDelayAttack()
+			|| WurstClient.INSTANCE.getHax().autoTotemHack.isBusy();
+	}
+	
+	/**
 	 * For hacks that attack several entities and only swing once afterwards.
 	 * Returns true if they should swing before each attack instead (1.8).
 	 */

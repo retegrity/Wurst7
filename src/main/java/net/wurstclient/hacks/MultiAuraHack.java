@@ -119,7 +119,7 @@ public final class MultiAuraHack extends Hack implements UpdateListener
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
-		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+		if(AttackUtils.shouldDelayAttack())
 			return;
 			
 		// attack entities

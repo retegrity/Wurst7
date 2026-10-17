@@ -163,7 +163,7 @@ public final class CrystalAuraHack extends Hack implements UpdateListener
 	
 	private void detonate(ArrayList<Entity> crystals)
 	{
-		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+		if(AttackUtils.shouldDelayAttack())
 			return;
 		
 		// 1.8 servers expect a swing before each attack
