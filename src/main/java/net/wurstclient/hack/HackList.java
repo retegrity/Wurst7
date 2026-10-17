@@ -36,8 +36,10 @@ public final class HackList implements UpdateListener
 	public final AntiCactusHack antiCactusHack = new AntiCactusHack();
 	public final AntiEntityPushHack antiEntityPushHack =
 		new AntiEntityPushHack();
+	public final AntiFireHack antiFireHack = new AntiFireHack();
 	public final AntiHungerHack antiHungerHack = new AntiHungerHack();
 	public final AntiKnockbackHack antiKnockbackHack = new AntiKnockbackHack();
+	public final AntiPotionHack antiPotionHack = new AntiPotionHack();
 	public final AntiSpamHack antiSpamHack = new AntiSpamHack();
 	public final AntiWaterPushHack antiWaterPushHack = new AntiWaterPushHack();
 	public final AntiWobbleHack antiWobbleHack = new AntiWobbleHack();
@@ -68,6 +70,7 @@ public final class HackList implements UpdateListener
 	public final BarrierEspHack barrierEspHack = new BarrierEspHack();
 	public final BaseFinderHack baseFinderHack = new BaseFinderHack();
 	public final BlinkHack blinkHack = new BlinkHack();
+	public final BlockHitHack blockHitHack = new BlockHitHack();
 	public final BoatFlyHack boatFlyHack = new BoatFlyHack();
 	public final BonemealAuraHack bonemealAuraHack = new BonemealAuraHack();
 	public final BowAimbotHack bowAimbotHack = new BowAimbotHack();
@@ -94,7 +97,9 @@ public final class HackList implements UpdateListener
 	public final ExcavatorHack excavatorHack = new ExcavatorHack();
 	public final ExtraElytraHack extraElytraHack = new ExtraElytraHack();
 	public final FancyChatHack fancyChatHack = new FancyChatHack();
+	public final FastBowHack fastBowHack = new FastBowHack();
 	public final FastBreakHack fastBreakHack = new FastBreakHack();
+	public final FastEatHack fastEatHack = new FastEatHack();
 	public final FastLadderHack fastLadderHack = new FastLadderHack();
 	public final FastPlaceHack fastPlaceHack = new FastPlaceHack();
 	public final FeedAuraHack feedAuraHack = new FeedAuraHack();
@@ -103,6 +108,7 @@ public final class HackList implements UpdateListener
 	public final FlightHack flightHack = new FlightHack();
 	public final FollowHack followHack = new FollowHack();
 	public final ForceOpHack forceOpHack = new ForceOpHack();
+	public final ForcePushHack forcePushHack = new ForcePushHack();
 	public final FreecamHack freecamHack = new FreecamHack();
 	public final FullbrightHack fullbrightHack = new FullbrightHack();
 	public final GlideHack glideHack = new GlideHack();
@@ -168,6 +174,7 @@ public final class HackList implements UpdateListener
 	public final DetectorHack detectorHack = new DetectorHack();
 	public final DiscordRpcHack discordRpcHack = new DiscordRpcHack();
 	public final ReachHack reachHack = new ReachHack();
+	public final RegenHack regenHack = new RegenHack();
 	public final RotationsHack rotationsHack = new RotationsHack();
 	public final RemoteViewHack remoteViewHack = new RemoteViewHack();
 	public final RestockHack restockHack = new RestockHack();

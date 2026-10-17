@@ -38,6 +38,7 @@ import net.wurstclient.settings.TakeItemsFromSetting;
 import net.wurstclient.settings.TakeItemsFromSetting.TakeItemsFrom;
 import net.wurstclient.settings.filterlists.CrystalAuraFilterList;
 import net.wurstclient.settings.filterlists.EntityFilterList;
+import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.BlockUtils;
 import net.wurstclient.util.EntityUtils;
 import net.wurstclient.util.InventoryUtils;
@@ -162,13 +163,20 @@ public final class CrystalAuraHack extends Hack implements UpdateListener
 	
 	private void detonate(ArrayList<Entity> crystals)
 	{
+		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			return;
+		
+		// 1.8 servers expect a swing before each attack
+		boolean swingFirst = AttackUtils.swingBeforeEachAttack();
 		for(Entity e : crystals)
 		{
 			faceTarget.face(e.getBoundingBox().getCenter());
+			if(swingFirst)
+				swingHand.swing(InteractionHand.MAIN_HAND);
 			MC.gameMode.attack(MC.player, e);
 		}
 		
-		if(!crystals.isEmpty())
+		if(!crystals.isEmpty() && !swingFirst)
 			swingHand.swing(InteractionHand.MAIN_HAND);
 	}
 	

@@ -35,6 +35,7 @@ import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.settings.SwingHandSetting;
 import net.wurstclient.settings.SwingHandSetting.SwingHand;
 import net.wurstclient.settings.filterlists.EntityFilterList;
+import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.EntityUtils;
 
 @SearchTags({"fight bot"})
@@ -214,9 +215,12 @@ public final class FightBotHack extends Hack
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
+		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			return;
+		
 		// attack entity
-		MC.gameMode.attack(MC.player, entity);
-		swingHand.swing(InteractionHand.MAIN_HAND);
+		AttackUtils.attackAndSwing(entity,
+			() -> swingHand.swing(InteractionHand.MAIN_HAND));
 		speed.resetTimer();
 	}
 	

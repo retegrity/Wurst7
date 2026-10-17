@@ -34,6 +34,7 @@ import net.wurstclient.settings.SwingHandSetting;
 import net.wurstclient.settings.SwingHandSetting.SwingHand;
 import net.wurstclient.settings.filterlists.EntityFilterList;
 import net.wurstclient.settings.filters.*;
+import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.BlockUtils;
 import net.wurstclient.util.EntityUtils;
 import net.wurstclient.util.RenderUtils;
@@ -221,9 +222,12 @@ public final class KillauraLegitHack extends Hack implements UpdateListener,
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
+		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			return;
+		
 		// attack entity
-		MC.gameMode.attack(MC.player, target);
-		swingHand.swing(InteractionHand.MAIN_HAND);
+		AttackUtils.attackAndSwing(target,
+			() -> swingHand.swing(InteractionHand.MAIN_HAND));
 		speed.resetTimer(speedRandMS.getValue());
 	}
 	

@@ -35,6 +35,7 @@ import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.settings.SwingHandSetting;
 import net.wurstclient.settings.SwingHandSetting.SwingHand;
 import net.wurstclient.settings.filterlists.EntityFilterList;
+import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.BlockUtils;
 import net.wurstclient.util.EntityUtils;
 import net.wurstclient.util.RenderUtils;
@@ -253,8 +254,11 @@ public final class KillauraHack extends Hack
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
-		MC.gameMode.attack(MC.player, target);
-		swingHand.swing(InteractionHand.MAIN_HAND);
+		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			return;
+		
+		AttackUtils.attackAndSwing(target,
+			() -> swingHand.swing(InteractionHand.MAIN_HAND));
 		
 		target = null;
 		speed.resetTimer(speedRandMS.getValue());

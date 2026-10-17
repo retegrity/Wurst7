@@ -28,6 +28,7 @@ import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.settings.SwingHandSetting;
 import net.wurstclient.settings.SwingHandSetting.SwingHand;
 import net.wurstclient.settings.filterlists.EntityFilterList;
+import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.EntityUtils;
 import net.wurstclient.util.RotationUtils;
 
@@ -134,12 +135,15 @@ public final class TpAuraHack extends Hack implements UpdateListener
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
+		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			return;
+		
 		// attack entity
 		RotationUtils.getNeededRotations(entity.getBoundingBox().getCenter())
 			.sendPlayerLookPacket();
 		
-		MC.gameMode.attack(player, entity);
-		swingHand.swing(InteractionHand.MAIN_HAND);
+		AttackUtils.attackAndSwing(entity,
+			() -> swingHand.swing(InteractionHand.MAIN_HAND));
 		speed.resetTimer();
 	}
 	

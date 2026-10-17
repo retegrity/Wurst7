@@ -25,6 +25,7 @@ import net.wurstclient.settings.SliderSetting.ValueDisplay;
 import net.wurstclient.settings.SwingHandSetting;
 import net.wurstclient.settings.SwingHandSetting.SwingHand;
 import net.wurstclient.settings.filterlists.EntityFilterList;
+import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.EntityUtils;
 
 @SearchTags({"trigger bot", "AutoAttack", "auto attack", "AutoClicker",
@@ -158,6 +159,9 @@ public final class TriggerBotHack extends Hack
 		if(WURST.getHax().criticalsHack.shouldDelayAttack())
 			return;
 		
+		if(WURST.getHax().blockHitHack.shouldDelayAttack())
+			return;
+		
 		if(simulateMouseClick.isChecked())
 		{
 			IKeyMapping.get(MC.options.keyAttack).simulatePress(true);
@@ -165,8 +169,8 @@ public final class TriggerBotHack extends Hack
 			
 		}else
 		{
-			MC.gameMode.attack(player, target);
-			swingHand.swing(InteractionHand.MAIN_HAND);
+			AttackUtils.attackAndSwing(target,
+				() -> swingHand.swing(InteractionHand.MAIN_HAND));
 		}
 		
 		speed.resetTimer(speedRandMS.getValue());
