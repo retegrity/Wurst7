@@ -57,11 +57,15 @@ public final class NavigatorMainScreen extends NavigatorScreen
 		ClickGui gui = WurstClient.INSTANCE.getGui();
 		int txtColor = gui.getTxtColor();
 		
+		// keep the search when coming back from a feature's settings
+		String oldText = searchBar == null ? "" : searchBar.getValue();
+		
 		Font tr = WurstClient.MC.font;
 		searchBar = new EditBox(tr, 0, 32, 200, 20, Component.literal(""));
 		searchBar.setTextColor(txtColor);
 		searchBar.setBordered(false);
 		searchBar.setMaxLength(128);
+		searchBar.setValue(oldText);
 		
 		addWidget(searchBar);
 		setFocused(searchBar);
@@ -308,6 +312,11 @@ public final class NavigatorMainScreen extends NavigatorScreen
 		// click animation
 		if(clickTimerRunning)
 		{
+			// Screens get the time since the last frame instead of the
+			// partial tick, which made this animation jump in 4 steps.
+			partialTicks = WurstClient.MC.getDeltaTracker()
+				.getGameTimeDeltaPartialTick(true);
+			
 			if(feature != expandingFeature)
 				return;
 			
