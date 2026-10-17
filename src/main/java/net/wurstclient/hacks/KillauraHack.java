@@ -180,7 +180,8 @@ public final class KillauraHack extends Hack
 			return;
 		
 		// don't fight over the rotation with Clutch
-		if(WURST.getHax().clutchHack.isClutching())
+		if(WURST.getHax().clutchHack.isClutching()
+			|| WURST.getHax().anchorAuraHack.isBusy())
 			return;
 		
 		Stream<Entity> stream = EntityUtils.getMeleeAttackableEntities();
