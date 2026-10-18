@@ -41,6 +41,7 @@
   "description.wurst.hack.anticactus": "Protects you from cactus damage.",
   "description.wurst.setting.anticactus.prevent_cactus-top_damage": "Sends extra movement packets to protect you when standing on top of a cactus. Works on vanilla and Paper servers. Does not work against Grim, NoCheat+, or Vulcan.\n\n§c§lWARNING:§r You can still take some damage during lag spikes.",
   "description.wurst.hack.antientitypush": "Prevents you from getting pushed by players and mobs.",
+  "description.wurst.hack.antiexploit": "Protects you from servers that try to crash or freeze your game with broken packets, such as explosions with absurd knockback, illegal velocity, huge particle counts or teleports outside of the world.",
   "description.wurst.hack.antifire": "Blocks damage from catching on fire.\nDoes NOT block damage from standing inside of fire.\nRequires a full hunger bar.\n\n§6§lNotice:§r This hack only works on servers that are based on Minecraft 1.8.",
   "description.wurst.hack.antihunger": "Slows down your hunger when you are walking and sprinting.\n\n§c§lWARNING:§r There have been reports of this hack causing you to take extra fall damage under specific, unknown conditions.",
   "description.wurst.hack.antibot": "Makes other hacks ignore NPCs and fake players. Works by treating any player that is not in the tab list as a bot. Affects PlayerESP, combat hacks, NameTags, HealthTags and more.",

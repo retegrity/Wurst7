@@ -36,6 +36,7 @@ public final class HackList implements UpdateListener
 	public final AntiCactusHack antiCactusHack = new AntiCactusHack();
 	public final AntiEntityPushHack antiEntityPushHack =
 		new AntiEntityPushHack();
+	public final AntiExploitHack antiExploitHack = new AntiExploitHack();
 	public final AntiFireHack antiFireHack = new AntiFireHack();
 	public final AntiHungerHack antiHungerHack = new AntiHungerHack();
 	public final AntiKnockbackHack antiKnockbackHack = new AntiKnockbackHack();
