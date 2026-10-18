@@ -221,6 +221,7 @@
   "description.wurst.setting.freecam.disable_on_damage": "Automatically turns off Freecam when you take damage.",
   "description.wurst.setting.freecam.reload_chunks": "Reloads all chunks when you turn off Freecam.\n\nTurning this off improves performance but can cause issues with visual holes in the world.",
   "description.wurst.hack.fullbright": "Allows you to see in the dark.",
+  "description.wurst.hack.ghostblocks": "Lets you place and break blocks only on your side, without the server knowing.\n\nThe server still has the real world, so standing on ghost blocks or walking through broken ones can get you rubber-banded or kicked for flying. Everything is put back to normal when you disable GhostBlocks.",
   "description.wurst.hack.glide": "Makes you glide down slowly when falling.\n\n§c§lWARNING:§r You will take fall damage if you don't use NoFall.",
   "description.wurst.hack.handnoclip": "Allows you to reach specific blocks through walls.",
   "description.wurst.hack.headroll": "Makes you nod all the time.\nOnly visible to other players.",
