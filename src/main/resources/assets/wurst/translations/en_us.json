@@ -330,7 +330,7 @@
   "description.wurst.setting.remoteview.filter_interactions": "Won't view interaction entities, which are invisible hitboxes that some servers use to create custom mobs or buttons.",
   "description.wurst.hack.restock": "Automatically restocks your hand with the selected items from your inventory. Works better with FastPlace.",
   "description.wurst.hack.safewalk": "Prevents you from falling off edges.",
-  "description.wurst.hack.scaffoldwalk": "Automatically places blocks below your feet.",
+  "description.wurst.hack.scaffold": "Automatically places blocks below your feet, with legit server-side rotations. Can also tower straight up and build flat bridges while jumping.",
   "description.wurst.hack.search": "Helps you to find specific blocks by highlighting them in rainbow color.",
   "description.wurst.hack.skinderp": "Randomly toggles parts of your skin.",
   "description.wurst.hack.sneak": "Makes you sneak automatically.",

@@ -255,7 +255,7 @@
   "description.wurst.setting.remoteview.filter_armor_stands": "Не смотреть глазами стоек для брони.",
   "description.wurst.hack.restock": "Автоматически пополняет стек предметов в руке из инвентаря. Лучше работает в связке с FastPlace.",
   "description.wurst.hack.safewalk": "Не дает вам упасть с краев блоков (будто бы вы зажали Shift).",
-  "description.wurst.hack.scaffoldwalk": "Автоматически ставит блоки под вашими ногами (строительство мостов).",
+  "description.wurst.hack.scaffold": "Автоматически ставит блоки под вашими ногами (строительство мостов).",
   "description.wurst.hack.search": "Помогает найти конкретные блоки, подсвечивая их радужным цветом (Search ESP).",
   "description.wurst.hack.skinderp": "Хаотично переключает слои вашего скина (куртку, шапку и т.д.).",
   "description.wurst.hack.sneak": "Заставляет вас автоматически красться.",

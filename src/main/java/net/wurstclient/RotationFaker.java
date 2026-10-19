@@ -288,6 +288,22 @@ public final class RotationFaker
 		player.setXRot(0);
 	}
 	
+	/**
+	 * Keeps the current managed rotation exactly where it is for the given
+	 * number of ticks. Returns false if there is no managed rotation.
+	 */
+	public boolean holdManagedRotation(int ticksUntilReset)
+	{
+		if(!managed)
+			return false;
+		
+		managedTicksLeft = ticksUntilReset;
+		releasing = false;
+		lastTurnYawDelta = 0;
+		lastTurnPitchDelta = 0;
+		return true;
+	}
+	
 	public float getServerYaw()
 	{
 		if(fakeRotation)

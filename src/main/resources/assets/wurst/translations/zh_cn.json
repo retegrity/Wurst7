@@ -255,7 +255,7 @@
   "description.wurst.setting.remoteview.filter_armor_stands": "不会观察盔甲架。",
   "description.wurst.hack.restock": "自动从背包中取出指定物品来补充手中的消耗，建议与 FastPlace 一起使用。",
   "description.wurst.hack.safewalk": "防止你从方块边缘摔落。",
-  "description.wurst.hack.scaffoldwalk": "自动在你的脚下搭方块。",
+  "description.wurst.hack.scaffold": "自动在你的脚下搭方块。",
   "description.wurst.hack.search": "帮助你找到所需要的方块并以彩虹色的方式高亮。",
   "description.wurst.hack.skinderp": "随机切换你的皮肤。",
   "description.wurst.hack.sneak": "让你自动保持潜行行走。",

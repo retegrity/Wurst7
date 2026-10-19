@@ -255,7 +255,7 @@
   "description.wurst.setting.remoteview.filter_armor_stands": "Nie będzie obserwować stojaków na zbroję.",
   "description.wurst.hack.restock": "Automatycznie uzupełnia rękę wybranymi przedmiotami z ekwipunku. Działa lepiej z FastPlace.",
   "description.wurst.hack.safewalk": "Zapobiega spadaniu z krawędzi.",
-  "description.wurst.hack.scaffoldwalk": "Automatycznie umieszcza bloki pod nogami.",
+  "description.wurst.hack.scaffold": "Automatycznie umieszcza bloki pod nogami.",
   "description.wurst.hack.search": "Pomaga znaleźć konkretne bloki, podświetlając je kolorem tęczy.",
   "description.wurst.hack.skinderp": "Losowo przełącza części twojego skina.",
   "description.wurst.hack.sneak": "Sprawia, że automatycznie się skradasz.",

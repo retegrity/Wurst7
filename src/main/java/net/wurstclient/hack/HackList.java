@@ -181,7 +181,7 @@ public final class HackList implements UpdateListener
 	public final RemoteViewHack remoteViewHack = new RemoteViewHack();
 	public final RestockHack restockHack = new RestockHack();
 	public final SafeWalkHack safeWalkHack = new SafeWalkHack();
-	public final ScaffoldWalkHack scaffoldWalkHack = new ScaffoldWalkHack();
+	public final ScaffoldHack scaffoldHack = new ScaffoldHack();
 	public final SearchHack searchHack = new SearchHack();
 	public final SkinDerpHack skinDerpHack = new SkinDerpHack();
 	public final SneakHack sneakHack = new SneakHack();
