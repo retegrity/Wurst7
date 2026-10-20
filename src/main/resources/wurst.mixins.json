@@ -13,6 +13,7 @@
     "ChatScreenMixin",
     "ClientCommonPacketListenerImplMixin",
     "ClientPacketListenerMixin",
+    "CommandSuggestionsMixin",
     "ConnectionMixin",
     "CreativeModeInventoryScreenMixin",
     "DirectJoinServerScreenMixin",
