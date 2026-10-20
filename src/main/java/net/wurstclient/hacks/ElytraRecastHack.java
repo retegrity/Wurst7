@@ -128,6 +128,10 @@ public final class ElytraRecastHack extends Hack implements UpdateListener
 		if(player == null)
 			return false;
 		
+		// don't jump while you are typing in chat, in your inventory, etc.
+		if(!WURST.getHax().invWalkHack.canPressKey(MC.options.keyJump))
+			return false;
+		
 		if(requireJump.isChecked()
 			&& !IKeyMapping.get(MC.options.keyJump).isActuallyDown())
 			return false;

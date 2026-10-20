@@ -243,9 +243,12 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		int maxY = targetY;
 		if(!Double.isNaN(lastGroundY) && player.getY() <= lastGroundY + 1.5)
 			maxY = Math.max(targetY, Mth.floor(lastGroundY) - 1);
-		
+			
 		// sneak at the edge until the block is there
-		if(eagle.isChecked() && player.onGround() && !towering)
+		// (but not while you are typing in chat, in your inventory, etc.)
+		if(!WURST.getHax().invWalkHack.canPressKey(MC.options.keyShift))
+			releaseSneak();
+		else if(eagle.isChecked() && player.onGround() && !towering)
 		{
 			MC.options.keyShift.setDown(true);
 			holdingSneak = true;
