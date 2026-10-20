@@ -102,6 +102,7 @@ public final class HackList implements UpdateListener
 	public final FastBreakHack fastBreakHack = new FastBreakHack();
 	public final FastEatHack fastEatHack = new FastEatHack();
 	public final FastLadderHack fastLadderHack = new FastLadderHack();
+	public final FastLungeHack fastLungeHack = new FastLungeHack();
 	public final FastPlaceHack fastPlaceHack = new FastPlaceHack();
 	public final FeedAuraHack feedAuraHack = new FeedAuraHack();
 	public final FightBotHack fightBotHack = new FightBotHack();
