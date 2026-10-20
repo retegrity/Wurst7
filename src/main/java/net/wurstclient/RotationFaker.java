@@ -44,6 +44,18 @@ public final class RotationFaker
 	private float lastTurnYawDelta;
 	private float lastTurnPitchDelta;
 	
+	// Human-like turning (Killaura). The rotation accelerates and slows down
+	// smoothly instead of jumping to the target in one tick.
+	private boolean human;
+	private float humanMaxSpeed;
+	private float humanAcceleration;
+	
+	// the rotation sent in the last movement packets and how much it changed
+	private float sentYaw;
+	private float sentPitch;
+	private float sentYawDelta;
+	private float sentPitchDelta;
+	
 	@Override
 	public void onPreMotion()
 	{
@@ -62,13 +74,25 @@ public final class RotationFaker
 			pitch = managedPitch;
 			
 		}else
+		{
+			trackSentRotation(player.getYRot(), player.getXRot());
 			return;
+		}
 		
+		trackSentRotation(yaw, pitch);
 		applied = true;
 		realYaw = player.getYRot();
 		realPitch = player.getXRot();
 		player.setYRot(yaw);
 		player.setXRot(pitch);
+	}
+	
+	private void trackSentRotation(float yaw, float pitch)
+	{
+		sentYawDelta = yaw - sentYaw;
+		sentPitchDelta = pitch - sentPitch;
+		sentYaw = yaw;
+		sentPitch = pitch;
 	}
 	
 	@Override
@@ -92,6 +116,13 @@ public final class RotationFaker
 		
 		if(!releasing && --managedTicksLeft < 0)
 		{
+			if(human)
+			{
+				releasing = true;
+				updateHumanRelease(player);
+				return;
+			}
+			
 			if(releaseSpeed <= 0)
 			{
 				clearManagedRotation();
@@ -102,7 +133,44 @@ public final class RotationFaker
 		}
 		
 		if(releasing)
-			updateRelease(player);
+			if(human)
+				updateHumanRelease(player);
+			else
+				updateRelease(player);
+	}
+	
+	/**
+	 * Turns the managed rotation back towards the camera rotation the same
+	 * human-like way and clears it once it is close enough that the last
+	 * small step back isn't noticeable.
+	 */
+	private void updateHumanRelease(LocalPlayer player)
+	{
+		// not wrapped, see updateRelease()
+		float realYaw = player.getYRot();
+		float realPitch = player.getXRot();
+		float threshold = Math.max(getMouseGcd() * 3, 1);
+		if(Math.abs(realYaw - managedYaw) <= threshold
+			&& Math.abs(realPitch - managedPitch) <= threshold
+			&& Math.abs(sentYawDelta) <= humanAcceleration)
+		{
+			clearManagedRotation();
+			return;
+		}
+		
+		humanTurn(managedYaw, managedPitch, realYaw, realPitch);
+	}
+	
+	/**
+	 * Lets a human-like managed rotation expire right away, so it turns back
+	 * to the camera smoothly. Other managed rotations are cleared instantly.
+	 */
+	public void releaseManagedRotation()
+	{
+		if(managed && human)
+			managedTicksLeft = 0;
+		else
+			clearManagedRotation();
 	}
 	
 	/**
@@ -134,9 +202,86 @@ public final class RotationFaker
 			releaseSpeed);
 	}
 	
+	/**
+	 * Turns towards the given point like a human moving a mouse: the rotation
+	 * lags behind the target (it only covers part of the remaining angle each
+	 * tick), and its speed changes by at most the given acceleration per tick,
+	 * so it never jumps by a large angle in a single tick (Intave's rotation
+	 * snap heuristic). Once the rotation expires, it turns back to the camera
+	 * the same way.
+	 *
+	 * @param maxSpeed
+	 *            the maximum turn speed in degrees per tick
+	 * @param acceleration
+	 *            how much the turn speed can change per tick, at most 20
+	 */
+	public void faceVectorHumanly(Vec3 vec, float maxSpeed, float acceleration,
+		int ticksUntilReset, boolean movementCorrection)
+	{
+		LocalPlayer player = WurstClient.MC.player;
+		Rotation needed = RotationUtils.getNeededRotations(vec);
+		
+		float fromYaw = managed ? managedYaw : player.getYRot();
+		float fromPitch = managed ? managedPitch : player.getXRot();
+		float toYaw = fromYaw + Mth.wrapDegrees(needed.yaw() - fromYaw);
+		
+		humanMaxSpeed = maxSpeed;
+		humanAcceleration = Math.min(acceleration, MAX_HUMAN_ACCELERATION);
+		humanTurn(fromYaw, fromPitch, toYaw, needed.pitch());
+		
+		lastTurnYawDelta = managedYaw - fromYaw;
+		lastTurnPitchDelta = managedPitch - fromPitch;
+		managedTicksLeft = ticksUntilReset;
+		this.movementCorrection = movementCorrection;
+		releaseSpeed = 0;
+		releasing = false;
+		human = true;
+		managed = true;
+	}
+	
+	// Intave flags a yaw step of more than 25° right after a tick without
+	// any rotation, so the turn speed must never change by more than this.
+	private static final float MAX_HUMAN_ACCELERATION = 20;
+	
+	/**
+	 * One tick of the human-like turn. Stores the result in
+	 * managedYaw/managedPitch.
+	 */
+	private void humanTurn(float fromYaw, float fromPitch, float toYaw,
+		float toPitch)
+	{
+		// only cover part of the remaining angle, with a different fraction
+		// every tick, so the rotation lags behind the target by a varying
+		// amount like a real hand does
+		float diffYaw = (toYaw - fromYaw) * (0.3F + random.nextFloat() * 0.2F);
+		float diffPitch =
+			(toPitch - fromPitch) * (0.2F + random.nextFloat() * 0.2F);
+		
+		diffYaw = Mth.clamp(diffYaw, -humanMaxSpeed, humanMaxSpeed);
+		diffPitch = Mth.clamp(diffPitch, -humanMaxSpeed, humanMaxSpeed);
+		
+		// limit how much the turn speed changes compared to what the server
+		// saw last tick
+		// (the last delta can be huge after a teleport, so it's limited too)
+		float acc = humanAcceleration * (0.75F + random.nextFloat() * 0.25F);
+		float lastYaw = Mth.clamp(sentYawDelta, -humanMaxSpeed, humanMaxSpeed);
+		float lastPitch =
+			Mth.clamp(sentPitchDelta, -humanMaxSpeed, humanMaxSpeed);
+		diffYaw = Mth.clamp(diffYaw, lastYaw - acc, lastYaw + acc);
+		diffPitch = Mth.clamp(diffPitch, lastPitch - acc, lastPitch + acc);
+		
+		float gcd = getMouseGcd();
+		diffYaw = Math.round(diffYaw / gcd) * gcd;
+		diffPitch = Math.round(diffPitch / gcd) * gcd;
+		
+		managedYaw = fromYaw + diffYaw;
+		managedPitch = Mth.clamp(fromPitch + diffPitch, -90, 90);
+	}
+	
 	private void turnTowards(Vec3 vec, float maxTurn, int ticksUntilReset,
 		boolean movementCorrection, float releaseSpeed)
 	{
+		human = false;
 		LocalPlayer player = WurstClient.MC.player;
 		Rotation needed = RotationUtils.getNeededRotations(vec);
 		
@@ -214,6 +359,7 @@ public final class RotationFaker
 	public void clearManagedRotation()
 	{
 		managed = false;
+		human = false;
 		releasing = false;
 		movementCorrection = false;
 	}

@@ -9,6 +9,7 @@ package net.wurstclient.hacks;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
@@ -39,6 +40,7 @@ import net.wurstclient.util.AttackUtils;
 import net.wurstclient.util.BlockUtils;
 import net.wurstclient.util.EntityUtils;
 import net.wurstclient.util.RenderUtils;
+import net.wurstclient.util.Rotation;
 import net.wurstclient.util.RotationUtils;
 
 @SearchTags({"kill aura", "ForceField", "force field", "CrystalAura",
@@ -82,6 +84,32 @@ public final class KillauraHack extends Hack
 	private final SliderSetting fov =
 		new SliderSetting("FOV", 360, 30, 360, 10, ValueDisplay.DEGREES);
 	
+	private final EnumSetting<RotationMode> rotationMode = new EnumSetting<>(
+		"Rotation",
+		"\u00a7lHuman\u00a7r turns towards the target like a mouse would:"
+			+ " it speeds up and slows down smoothly, lags a little behind"
+			+ " the target, moves around on its hitbox and only attacks when"
+			+ " it's actually looking at the target (otherwise it misses, like"
+			+ " a real click). Needed for anti-cheats like Intave.\n\n"
+			+ "\u00a7lInstant\u00a7r faces the target in a single tick and"
+			+ " always hits.",
+		RotationMode.values(), RotationMode.HUMAN);
+	
+	private final SliderSetting turnSpeed = new SliderSetting("Turn speed",
+		"The fastest that \u00a7lHuman\u00a7r rotation turns.", 40, 10, 90, 1,
+		ValueDisplay.DEGREES.withSuffix("/tick"));
+	
+	private final SliderSetting acceleration = new SliderSetting("Acceleration",
+		"How quickly \u00a7lHuman\u00a7r rotation can speed up or slow"
+			+ " down. Above 20 it would snap, which Intave flags.",
+		15, 5, 20, 1, ValueDisplay.DEGREES.withSuffix("/tick\u00b2"));
+	
+	private final SliderSetting missChance = new SliderSetting("Miss chance",
+		"How often \u00a7lHuman\u00a7r rotation misses on purpose, even when"
+			+ " it's looking at the target. Intave flags you if fewer than 5%"
+			+ " of your swings miss.",
+		0.08, 0, 0.3, 0.01, ValueDisplay.PERCENTAGE);
+	
 	private final SwingHandSetting swingHand = new SwingHandSetting(
 		SwingHandSetting.genericCombatDescription(this), SwingHand.CLIENT);
 	
@@ -113,8 +141,22 @@ public final class KillauraHack extends Hack
 	
 	private static final int ROTATION_TICKS = 5;
 	
+	// how far from the center of the target's hitbox Human rotation can
+	// still miss on purpose instead of not clicking at all
+	private static final double MAX_MISS_ANGLE = 30;
+	
 	private Entity target;
 	private Entity renderTarget;
+	
+	// Human rotation: where on the target's hitbox it's aiming, relative to
+	// the center (side: -1 to 1, height: 0 to 1), and where it's heading
+	private final Random random = new Random();
+	private Entity aimEntity;
+	private double aimSide;
+	private double aimHeight;
+	private double goalSide;
+	private double goalHeight;
+	private int goalTicks;
 	
 	public KillauraHack()
 	{
@@ -127,6 +169,10 @@ public final class KillauraHack extends Hack
 		addSetting(speedRandMS);
 		addSetting(priority);
 		addSetting(fov);
+		addSetting(rotationMode);
+		addSetting(turnSpeed);
+		addSetting(acceleration);
+		addSetting(missChance);
 		addSetting(swingHand);
 		addSetting(damageIndicator);
 		addSetting(pauseOnContainers);
@@ -165,7 +211,8 @@ public final class KillauraHack extends Hack
 		
 		target = null;
 		renderTarget = null;
-		WURST.getRotationFaker().clearManagedRotation();
+		aimEntity = null;
+		WURST.getRotationFaker().releaseManagedRotation();
 	}
 	
 	@Override
@@ -213,20 +260,73 @@ public final class KillauraHack extends Hack
 		if(candidate == null)
 			return;
 		
-		// aim at the closest point of the hitbox
-		Vec3 hitVec = getClosestPoint(candidate.getBoundingBox());
+		boolean human = rotationMode.getSelected() == RotationMode.HUMAN;
+		
+		// Instant: aim at the closest point of the hitbox
+		// Human: aim at a point that moves around on the hitbox
+		Vec3 hitVec = human ? getHumanAimPoint(candidate)
+			: getClosestPoint(candidate.getBoundingBox());
 		if(checkLOS.isChecked() && !BlockUtils.hasLineOfSight(hitVec))
 			return;
 		
 		// keep looking at the target on every tick, not just when attacking
-		WURST.getRotationFaker().faceVectorSilently(hitVec, ROTATION_TICKS,
-			movementCorrection.isChecked());
+		if(human)
+			WURST.getRotationFaker().faceVectorHumanly(hitVec,
+				turnSpeed.getValueF(), acceleration.getValueF(), ROTATION_TICKS,
+				movementCorrection.isChecked());
+		else
+			WURST.getRotationFaker().faceVectorSilently(hitVec, ROTATION_TICKS,
+				movementCorrection.isChecked());
 		
 		if(!inAttackRange || !speed.isTimeToAttack())
 			return;
 		
 		target = candidate;
 		WURST.getHax().autoSwordHack.setSlot(target);
+	}
+	
+	/**
+	 * A point on the target's hitbox that drifts around smoothly, crossing
+	 * from one side of the center to the other every few ticks. Aiming at a
+	 * fixed point (like the closest one) keeps the angle to the center of the
+	 * hitbox almost constant, which Intave's accuracy heuristics flag.
+	 */
+	private Vec3 getHumanAimPoint(Entity entity)
+	{
+		if(entity != aimEntity)
+		{
+			aimEntity = entity;
+			aimSide = 0;
+			aimHeight = 0.6;
+			goalTicks = 0;
+		}
+		
+		if(--goalTicks <= 0)
+		{
+			// alternate between the left and right side of the center
+			double side = 0.2 + random.nextDouble() * 0.55;
+			goalSide = goalSide > 0 ? -side : side;
+			goalHeight = 0.25 + random.nextDouble() * 0.65;
+			goalTicks = 3 + random.nextInt(5);
+		}
+		
+		aimSide += (goalSide - aimSide) * 0.35;
+		aimHeight += (goalHeight - aimHeight) * 0.35;
+		
+		// "side" is relative to the direction you are looking at it from
+		AABB box = entity.getBoundingBox();
+		Vec3 center = box.getCenter();
+		Vec3 eyes = RotationUtils.getEyesPos();
+		double dx = center.x - eyes.x;
+		double dz = center.z - eyes.z;
+		double length = Math.hypot(dx, dz);
+		double sideX = length < 1e-4 ? 1 : -dz / length;
+		double sideZ = length < 1e-4 ? 0 : dx / length;
+		double halfWidth = box.getXsize() / 2;
+		
+		return new Vec3(center.x + sideX * aimSide * halfWidth,
+			box.minY + aimHeight * box.getYsize(),
+			center.z + sideZ * aimSide * halfWidth);
 	}
 	
 	private Vec3 getClosestPoint(AABB box)
@@ -258,11 +358,62 @@ public final class KillauraHack extends Hack
 		if(AttackUtils.shouldDelayAttack())
 			return;
 		
+		if(rotationMode.getSelected() == RotationMode.HUMAN
+			&& !shouldHumanAttack())
+			return;
+		
 		AttackUtils.attackAndSwing(target,
 			() -> swingHand.swing(InteractionHand.MAIN_HAND));
 		
 		target = null;
 		speed.resetTimer(speedRandMS.getValue());
+	}
+	
+	/**
+	 * Clicks like a human: only hits if the rotation the server has right
+	 * now is actually looking at the target. Otherwise (or sometimes on
+	 * purpose) it only swings, which is a miss.
+	 *
+	 * @return true if it should attack
+	 */
+	private boolean shouldHumanAttack()
+	{
+		// the attack is sent before this tick's movement packet, so the
+		// server checks it against the rotation from the last tick
+		Vec3 eyes = RotationUtils.getEyesPos();
+		Vec3 look = new Rotation(WURST.getRotationFaker().getServerYaw(),
+			WURST.getRotationFaker().getServerPitch()).toLookVec();
+		
+		if(isLookingAt(eyes, look, target)
+			&& random.nextDouble() >= missChance.getValue())
+			return true;
+		
+		// not looking anywhere near it, so don't click at all yet
+		Vec3 toCenter = target.getBoundingBox().getCenter().subtract(eyes);
+		double cos = look.dot(toCenter.normalize());
+		if(Math.toDegrees(Math.acos(Mth.clamp(cos, -1, 1))) > MAX_MISS_ANGLE)
+			return false;
+		
+		// miss, like a vanilla click on nothing
+		swingHand.swing(InteractionHand.MAIN_HAND);
+		MC.player.resetAttackStrengthTicker();
+		target = null;
+		speed.resetTimer(speedRandMS.getValue());
+		return false;
+	}
+	
+	private boolean isLookingAt(Vec3 eyes, Vec3 look, Entity entity)
+	{
+		AABB box = entity.getBoundingBox().inflate(entity.getPickRadius());
+		if(box.contains(eyes))
+			return true;
+		
+		Vec3 end = eyes.add(look.scale(range.getValue()));
+		Vec3 hit = box.clip(eyes, end).orElse(null);
+		if(hit == null)
+			return false;
+		
+		return !checkLOS.isChecked() || BlockUtils.hasLineOfSight(hit);
 	}
 	
 	@Override
@@ -287,6 +438,25 @@ public final class KillauraHack extends Hack
 		
 		RenderUtils.drawSolidBox(matrixStack, box, quadColor, false);
 		RenderUtils.drawOutlinedBox(matrixStack, box, lineColor, false);
+	}
+	
+	private enum RotationMode
+	{
+		HUMAN("Human"),
+		INSTANT("Instant");
+		
+		private final String name;
+		
+		private RotationMode(String name)
+		{
+			this.name = name;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return name;
+		}
 	}
 	
 	private enum Priority
