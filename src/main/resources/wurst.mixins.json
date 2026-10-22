@@ -27,6 +27,7 @@
     "KeyboardHandlerMixin",
     "LanguageManagerMixin",
     "FireworkRocketEntityAccessor",
+    "FontAccessor",
     "LivingEntityAccessor",
     "LevelRendererMixin",
     "LivingEntityRendererMixin",

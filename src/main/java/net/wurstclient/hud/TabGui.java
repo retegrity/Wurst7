@@ -25,6 +25,7 @@ import net.wurstclient.hacks.TooManyHaxHack;
 import net.wurstclient.other_features.TabGuiOtf;
 import net.wurstclient.util.ChatUtils;
 import net.wurstclient.util.RenderUtils;
+import net.wurstclient.util.WurstFont;
 
 public final class TabGui implements KeyPressListener
 {
@@ -67,7 +68,7 @@ public final class TabGui implements KeyPressListener
 		width = 64;
 		for(Tab tab : tabs)
 		{
-			int tabWidth = MC.font.width(tab.name) + 10;
+			int tabWidth = WurstFont.get().width(tab.name) + 10;
 			if(tabWidth > width)
 				width = tabWidth;
 		}
@@ -132,7 +133,7 @@ public final class TabGui implements KeyPressListener
 		
 		int textY = 1;
 		int txtColor = WURST.getGui().getTxtColor();
-		Font tr = MC.font;
+		Font tr = WurstFont.get();
 		context.guiRenderState.up();
 		for(int i = 0; i < tabs.size(); i++)
 		{
@@ -210,7 +211,7 @@ public final class TabGui implements KeyPressListener
 			width = 64;
 			for(Feature feature : features)
 			{
-				int fWidth = MC.font.width(feature.getName()) + 10;
+				int fWidth = WurstFont.get().width(feature.getName()) + 10;
 				if(fWidth > width)
 					width = fWidth;
 			}

@@ -12,7 +12,6 @@ import java.util.Comparator;
 
 import net.wurstclient.DontBlock;
 import net.wurstclient.SearchTags;
-import net.wurstclient.WurstClient;
 import net.wurstclient.hack.Hack;
 import net.wurstclient.other_feature.OtherFeature;
 import net.wurstclient.settings.CheckboxSetting;
@@ -20,6 +19,7 @@ import net.wurstclient.settings.ColorSetting;
 import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
+import net.wurstclient.util.WurstFont;
 
 @SearchTags({"hack list", "HakList", "hak list", "HacksList", "hacks list",
 	"HaxList", "hax list", "ArrayList", "array list", "ModList", "mod list",
@@ -301,7 +301,7 @@ public final class HackListOtf extends OtherFeature
 		NAME("Name", (a, b) -> a.getName().compareToIgnoreCase(b.getName())),
 		
 		WIDTH("Width", Comparator
-			.comparingInt(h -> WurstClient.MC.font.width(h.getRenderName())));
+			.comparingInt(h -> WurstFont.get().width(h.getRenderName())));
 		
 		private final String name;
 		private final Comparator<Hack> comparator;

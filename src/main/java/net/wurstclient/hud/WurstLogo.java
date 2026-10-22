@@ -14,6 +14,7 @@ import net.minecraft.resources.Identifier;
 import net.wurstclient.WurstClient;
 import net.wurstclient.other_features.WurstLogoOtf;
 import net.wurstclient.util.RenderUtils;
+import net.wurstclient.util.WurstFont;
 
 public final class WurstLogo
 {
@@ -30,7 +31,7 @@ public final class WurstLogo
 		if(!otf.isOnlyLogo())
 		{
 			String version = getVersionString();
-			Font tr = WurstClient.MC.font;
+			Font tr = WurstFont.get();
 			
 			// background
 			int bgColor;

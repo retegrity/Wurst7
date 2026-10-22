@@ -9,16 +9,15 @@ package net.wurstclient.clickgui;
 
 import org.lwjgl.glfw.GLFW;
 
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.wurstclient.WurstClient;
 import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.util.RenderUtils;
+import net.wurstclient.util.WurstFont;
 
 public final class ComboBoxPopup<T extends Enum<T>> extends Popup
 {
 	private static final ClickGui GUI = WurstClient.INSTANCE.getGui();
-	private static final Font TR = WurstClient.MC.font;
 	
 	private final EnumSetting<T> setting;
 	private final int popupWidth;
@@ -99,7 +98,7 @@ public final class ComboBoxPopup<T extends Enum<T>> extends Popup
 				GUI.getBgColor(), GUI.getOpacity() * (hValue ? 1.5F : 1)));
 			
 			context.guiRenderState.up();
-			context.text(TR, value.toString(), x1 + 2, yi1 + 2,
+			context.text(WurstFont.get(), value.toString(), x1 + 2, yi1 + 2,
 				GUI.getTxtColor(), false);
 		}
 		

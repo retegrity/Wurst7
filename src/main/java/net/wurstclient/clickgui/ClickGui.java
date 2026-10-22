@@ -37,6 +37,7 @@ import net.wurstclient.hacks.ClickGuiHack;
 import net.wurstclient.settings.Setting;
 import net.wurstclient.util.RenderUtils;
 import net.wurstclient.util.json.JsonUtils;
+import net.wurstclient.util.WurstFont;
 
 public final class ClickGui
 {
@@ -602,7 +603,7 @@ public final class ClickGui
 			return;
 		
 		String[] lines = tooltip.split("\n");
-		Font tr = MC.font;
+		Font tr = WurstFont.get();
 		
 		int tw = 0;
 		int th = lines.length * tr.lineHeight;
@@ -835,7 +836,7 @@ public final class ClickGui
 		context.fill(x1, y1, x3, y3, titleBgColor);
 		
 		// window title
-		Font tr = MC.font;
+		Font tr = WurstFont.get();
 		String title = tr.substrByWidth(
 			net.minecraft.network.chat.Component.literal(window.getTitle()),
 			x3 - x1).getString();

@@ -21,6 +21,7 @@ import net.wurstclient.hack.Hack;
 import net.wurstclient.other_features.HackListOtf;
 import net.wurstclient.other_features.HackListOtf.Mode;
 import net.wurstclient.other_features.HackListOtf.Position;
+import net.wurstclient.util.WurstFont;
 
 public final class HackListHUD implements UpdateListener
 {
@@ -98,7 +99,7 @@ public final class HackListHUD implements UpdateListener
 	 */
 	private void drawLines(GuiGraphicsExtractor context, List<Line> lines)
 	{
-		Font tr = WurstClient.MC.font;
+		Font tr = WurstFont.get();
 		boolean left = otf.getPosition() == Position.LEFT;
 		boolean rainbow = otf.isRainbow();
 		double seconds = System.nanoTime() / 1e9;
