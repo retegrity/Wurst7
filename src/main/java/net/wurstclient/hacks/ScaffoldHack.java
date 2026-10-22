@@ -45,6 +45,21 @@ import net.wurstclient.util.RotationUtils;
 @SearchTags({"ScaffoldWalk", "scaffold walk", "bridge", "tower", "auto bridge"})
 public final class ScaffoldHack extends Hack implements UpdateListener
 {
+	private final EnumSetting<Mode> mode = new EnumSetting<>("Mode",
+		"\u00a7lNormal\u00a7r bridges while you walk.\n\n"
+			+ "\u00a7lTelly\u00a7r sprint-jumps while you move forward: it"
+			+ " jumps and looks forward on the ground, turns around in the air"
+			+ " to build the bridge behind you at the height you jumped from,"
+			+ " then turns forward again before landing, so the next jump is"
+			+ " a sprint jump too. Much faster than normal bridging.",
+		Mode.values(), Mode.NORMAL);
+	
+	private final SliderSetting tellyStraightTicks =
+		new SliderSetting("Telly straight ticks",
+			"How many ticks after jumping Telly keeps looking forward before"
+				+ " turning around to place blocks.",
+			1, 0, 5, 1, ValueDisplay.INTEGER.withSuffix(" ticks"));
+	
 	private final SliderSetting prediction = new SliderSetting("Prediction",
 		"How many ticks ahead Scaffold predicts where you are going, so the"
 			+ " blocks are there in time.",
@@ -125,6 +140,9 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 	// ticks without building before switching back to the original item
 	private static final int SWITCH_BACK_DELAY = 10;
 	
+	// Telly turns forward again this many ticks before landing
+	private static final int TELLY_LANDING_TICKS = 2;
+	
 	// how far a chain can be extended before starting a new one instead
 	private static final int MAX_EXTEND_STEPS = 3;
 	
@@ -140,6 +158,8 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 	private int idleTicks;
 	private boolean holdingSneak;
 	private boolean holdingSprint;
+	private boolean holdingJump;
+	private int airTicks;
 	private boolean randomAimOnce;
 	private final Random random = new Random();
 	private float bridgeYaw = Float.NaN;
@@ -149,6 +169,8 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 	{
 		super("Scaffold");
 		setCategory(Category.BLOCKS);
+		addSetting(mode);
+		addSetting(tellyStraightTicks);
 		addSetting(prediction);
 		addSetting(turnSpeed);
 		addSetting(returnSpeed);
@@ -182,6 +204,7 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		EVENTS.remove(UpdateListener.class, this);
 		releaseSneak();
 		releaseSprintKey();
+		releaseJumpKey();
 		idleTicks = SWITCH_BACK_DELAY;
 		goIdle();
 	}
@@ -207,6 +230,12 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		if(towering)
 			((LivingEntityAccessor)player).wurst_setNoJumpDelay(0);
 		
+		airTicks = player.onGround() ? 0 : airTicks + 1;
+		boolean telly = isTelly(towering);
+		releaseJumpKey();
+		if(telly)
+			tellyJump(player);
+		
 		int blockSlot = BlockChainPlacer.findBlockSlot(player);
 		if(blockSlot == -1 || player.getAbilities().flying
 			|| player.isPassenger())
@@ -216,7 +245,7 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 			return;
 		}
 		
-		int targetY = getTargetY(player, towering);
+		int targetY = getTargetY(player, towering, telly);
 		AABB predicted = predictBox(player, prediction.getValueI());
 		
 		// Build under the middle of where you will be, like a real player
@@ -248,7 +277,7 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		// (but not while you are typing in chat, in your inventory, etc.)
 		if(!WURST.getHax().invWalkHack.canPressKey(MC.options.keyShift))
 			releaseSneak();
-		else if(eagle.isChecked() && player.onGround() && !towering)
+		else if(eagle.isChecked() && player.onGround() && !towering && !telly)
 		{
 			MC.options.keyShift.setDown(true);
 			holdingSneak = true;
@@ -274,12 +303,24 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		
 		idleTicks = 0;
 		
+		// Telly: look forward on the ground, right after jumping and just
+		// before landing, so every jump is a sprint jump in the right
+		// direction. Only turn around to place blocks in between.
+		if(telly && !canTellyAim(player))
+		{
+			WURST.getRotationFaker().expireManagedRotation();
+			if(debug.isChecked())
+				LOGGER.info(String.format(Locale.ROOT,
+					"t=%d telly: looking forward (air=%d, ground=%s)",
+					player.tickCount, airTicks, player.onGround()));
+			return;
+		}
+		
 		// Stay: don't move the rotation as long as it still looks at the
 		// clicked face
 		boolean stay = aim.getSelected() == Aim.STAY && !randomAimOnce
 			&& BlockChainPlacer.hitsFace(placement, range)
-			&& WURST.getRotationFaker()
-				.holdManagedRotation(rotationHold.getValueI());
+			&& WURST.getRotationFaker().holdManagedRotation(getHoldTicks());
 		
 		String aimMode = "stay";
 		if(!stay)
@@ -466,9 +507,61 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 	
 	private void turnTo(Vec3 aimAt)
 	{
+		// Telly turns back forward as fast as it turned around, since it has
+		// to face forward again before landing
+		boolean telly = mode.getSelected() == Mode.TELLY;
+		float release =
+			telly ? Math.max(turnSpeed.getValueF(), returnSpeed.getValueF())
+				: returnSpeed.getValueF();
+		
 		WURST.getRotationFaker().faceVectorSmoothly(aimAt,
-			turnSpeed.getValueF(), rotationHold.getValueI(),
-			movementCorrection.isChecked(), returnSpeed.getValueF());
+			turnSpeed.getValueF(), getHoldTicks(),
+			movementCorrection.isChecked(), release);
+	}
+	
+	private int getHoldTicks()
+	{
+		return mode.getSelected() == Mode.TELLY ? 1 : rotationHold.getValueI();
+	}
+	
+	private boolean isTelly(boolean towering)
+	{
+		return mode.getSelected() == Mode.TELLY && !towering
+			&& MC.options.keyUp.isDown();
+	}
+	
+	/**
+	 * Telly: jumps whenever you are on the ground, but only once the rotation
+	 * looks forward again, so the jump's sprint boost goes forward.
+	 */
+	private void tellyJump(LocalPlayer player)
+	{
+		if(!player.onGround() || !isLookingForward(player))
+			return;
+		
+		if(!WURST.getHax().invWalkHack.canPressKey(MC.options.keyJump))
+			return;
+		
+		MC.options.keyJump.setDown(true);
+		holdingJump = true;
+	}
+	
+	/**
+	 * Telly only turns around to place blocks while in the air, after the
+	 * straight ticks and not right before landing.
+	 */
+	private boolean canTellyAim(LocalPlayer player)
+	{
+		if(player.onGround() || airTicks <= tellyStraightTicks.getValueI())
+			return false;
+		
+		return !BlockChainPlacer.simulate(player, TELLY_LANDING_TICKS).landed();
+	}
+	
+	private boolean isLookingForward(LocalPlayer player)
+	{
+		float serverYaw = WURST.getRotationFaker().getServerYaw();
+		return Math.abs(Mth.wrapDegrees(serverYaw - player.getYRot())) < 15;
 	}
 	
 	/**
@@ -504,10 +597,12 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 			&& !MC.options.keyLeft.isDown() && !MC.options.keyRight.isDown();
 	}
 	
-	private int getTargetY(LocalPlayer player, boolean towering)
+	private int getTargetY(LocalPlayer player, boolean towering, boolean telly)
 	{
+		// Telly always builds at the height you jumped from
 		int feetLevel = Mth.floor(player.getY()) - 1;
-		if(towering || !keepY.isChecked() || Double.isNaN(lastGroundY))
+		if(towering || !keepY.isChecked() && !telly
+			|| Double.isNaN(lastGroundY))
 			return feetLevel;
 		
 		// only while jumping, not e.g. when flying up high
@@ -605,6 +700,15 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		holdingSneak = false;
 	}
 	
+	private void releaseJumpKey()
+	{
+		if(!holdingJump)
+			return;
+		
+		IKeyMapping.get(MC.options.keyJump).resetDownState();
+		holdingJump = false;
+	}
+	
 	private void releaseSprintKey()
 	{
 		if(!holdingSprint)
@@ -612,6 +716,25 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		
 		IKeyMapping.get(MC.options.keySprint).resetDownState();
 		holdingSprint = false;
+	}
+	
+	private enum Mode
+	{
+		NORMAL("Normal"),
+		TELLY("Telly");
+		
+		private final String name;
+		
+		private Mode(String name)
+		{
+			this.name = name;
+		}
+		
+		@Override
+		public String toString()
+		{
+			return name;
+		}
 	}
 	
 	private enum Aim

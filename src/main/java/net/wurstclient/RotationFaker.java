@@ -356,6 +356,16 @@ public final class RotationFaker
 		turnFrom(managedYaw, managedPitch, realYaw, realPitch, releaseSpeed);
 	}
 	
+	/**
+	 * Ends the managed rotation's hold time right away, so it starts turning
+	 * back to the camera rotation (at its release speed) after this tick.
+	 */
+	public void expireManagedRotation()
+	{
+		if(managed && !releasing)
+			managedTicksLeft = 0;
+	}
+	
 	public void clearManagedRotation()
 	{
 		managed = false;
