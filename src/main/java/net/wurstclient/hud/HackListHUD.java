@@ -42,7 +42,7 @@ public final class HackListHUD implements UpdateListener
 		
 		if(otf.getPosition() == Position.LEFT
 			&& WurstClient.INSTANCE.getOtfs().wurstLogoOtf.isVisible())
-			posY = 22;
+			posY = WurstClient.INSTANCE.getOtfs().wurstLogoOtf.getBottom() + 1;
 		else
 			posY = 2;
 		posY += otf.getVerticalOffset();

@@ -7,11 +7,14 @@
  */
 package net.wurstclient.hud;
 
+import org.joml.Matrix3x2fStack;
+
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.wurstclient.WurstClient;
+import net.wurstclient.other_features.HackListOtf;
 import net.wurstclient.other_features.WurstLogoOtf;
 import net.wurstclient.util.RenderUtils;
 import net.wurstclient.util.WurstFont;
@@ -27,6 +30,12 @@ public final class WurstLogo
 		WurstLogoOtf otf = WURST.getOtfs().wurstLogoOtf;
 		if(!otf.isVisible())
 			return;
+		
+		if(otf.isTextLogo())
+		{
+			renderTextLogo(context, otf);
+			return;
+		}
 		
 		if(!otf.isOnlyLogo())
 		{
@@ -51,6 +60,52 @@ public final class WurstLogo
 		// Wurst logo
 		context.blit(RenderPipelines.GUI_TEXTURED, LOGO_TEXTURE, 0, 3, 0, 0, 72,
 			18, 72, 18);
+	}
+	
+	/**
+	 * Renders the logo as the text "Wurst" (optionally with the version),
+	 * scaled up, instead of the image and the version strip.
+	 */
+	private void renderTextLogo(GuiGraphicsExtractor context, WurstLogoOtf otf)
+	{
+		String text = "Wurst";
+		if(otf.isTextVersion())
+			text += " " + WurstClient.VERSION;
+		
+		int color = getTextLogoColor(otf);
+		float scale = otf.getTextSize();
+		
+		// the custom font is loaded at the scaled-up resolution, so it stays
+		// sharp (the Minecraft font is pixel art, so scaling it is fine)
+		Font tr = otf.isTextCustomFont()
+			? WURST.getOtfs().fontOtf.getFont(scale) : WurstClient.MC.font;
+		
+		Matrix3x2fStack matrices = context.pose();
+		matrices.pushMatrix();
+		matrices.translate(2, 2);
+		matrices.scale(scale, scale);
+		context.text(tr, text, 0, 0, color, true);
+		matrices.popMatrix();
+	}
+	
+	private int getTextLogoColor(WurstLogoOtf otf)
+	{
+		HackListOtf hackList = WURST.getOtfs().hackListOtf;
+		boolean sync = otf.isTextSyncedWithHackList();
+		
+		// one entry above the HackList's first entry, so the rainbow continues
+		// from the logo down the list
+		if(sync && hackList.isRainbow())
+			return 0xFF000000
+				| hackList.getRainbowColor(System.nanoTime() / 1e9, -1);
+		
+		if(WURST.getHax().rainbowUiHack.isEnabled())
+			return RenderUtils.toIntColor(WURST.getGui().getAcColor(), 1);
+		
+		if(sync)
+			return hackList.getColor(0xFF);
+		
+		return otf.getTextLogoColor();
 	}
 	
 	private String getVersionString()

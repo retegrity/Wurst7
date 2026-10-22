@@ -23,6 +23,7 @@ import net.wurstclient.clickgui.ClickGui;
 import net.wurstclient.events.KeyPressListener;
 import net.wurstclient.hacks.TooManyHaxHack;
 import net.wurstclient.other_features.TabGuiOtf;
+import net.wurstclient.other_features.WurstLogoOtf;
 import net.wurstclient.util.ChatUtils;
 import net.wurstclient.util.RenderUtils;
 import net.wurstclient.util.WurstFont;
@@ -125,7 +126,11 @@ public final class TabGui implements KeyPressListener
 		
 		Matrix3x2fStack matrixStack = context.pose();
 		matrixStack.pushMatrix();
-		matrixStack.translate(2, 23);
+		// below the Wurst logo (the text logo can be bigger than the image)
+		WurstLogoOtf logo = WurstClient.INSTANCE.getOtfs().wurstLogoOtf;
+		int y =
+			logo.isVisible() && logo.isTextLogo() ? logo.getBottom() + 2 : 23;
+		matrixStack.translate(2, y);
 		context.guiRenderState.up();
 		
 		drawBox(context, 0, 0, width, height);

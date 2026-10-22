@@ -44,8 +44,10 @@ public final class FontOtf extends OtherFeature
 			+ " in the middle of their line.",
 		0, -3, 3, 0.25, ValueDisplay.DECIMAL.withSuffix("px"));
 	
-	private CustomFont customFont;
-	private String loadedKey;
+	// the font for normal text, and a sharper copy for scaled-up text (the
+	// text logo), so it isn't blurry
+	private final LoadedFont normalFont = new LoadedFont();
+	private final LoadedFont scaledFont = new LoadedFont();
 	
 	public FontOtf()
 	{
@@ -61,47 +63,72 @@ public final class FontOtf extends OtherFeature
 	 */
 	public Font getFont()
 	{
-		Path selected = font.getSelected();
-		if(selected == null)
-		{
-			unload();
-			return MC.font;
-		}
-		
-		// render the glyphs at the real resolution of the GUI, so they are
-		// sharp at any GUI scale
-		int guiScale = Math.max(1, MC.getWindow().getGuiScale());
-		String key = selected + "|" + size.getValue() + "|"
-			+ verticalOffset.getValue() + "|" + guiScale;
-		
-		if(!Objects.equals(key, loadedKey))
-		{
-			unload();
-			loadedKey = key;
-			
-			try
-			{
-				customFont = CustomFont.load(selected, size.getValueF(),
-					guiScale, verticalOffset.getValueF());
-				
-			}catch(Exception e)
-			{
-				// keep the key, so it doesn't try again on every frame
-				LOGGER.error("Couldn't load font {}", selected, e);
-			}
-		}
-		
-		return customFont != null ? customFont.getFont() : MC.font;
+		return normalFont.get(1);
 	}
 	
-	private void unload()
+	/**
+	 * Like {@link #getFont()}, but for text that is drawn scaled up by the
+	 * given factor. Its glyphs are rendered at that higher resolution, so the
+	 * text stays sharp instead of being a blurry, stretched copy.
+	 */
+	public Font getFont(float scale)
 	{
-		if(customFont != null)
+		if(scale <= 1)
+			return getFont();
+		
+		return scaledFont.get(scale);
+	}
+	
+	private final class LoadedFont
+	{
+		private CustomFont customFont;
+		private String loadedKey;
+		
+		public Font get(float scale)
 		{
-			customFont.close();
-			customFont = null;
+			Path selected = font.getSelected();
+			if(selected == null)
+			{
+				unload();
+				return MC.font;
+			}
+			
+			// render the glyphs at the real resolution of the GUI (and of the
+			// scaled text), so they are sharp at any GUI scale
+			int guiScale = Math.max(1, MC.getWindow().getGuiScale());
+			float oversample = guiScale * scale;
+			String key = selected + "|" + size.getValue() + "|"
+				+ verticalOffset.getValue() + "|" + oversample;
+			
+			if(!Objects.equals(key, loadedKey))
+			{
+				unload();
+				loadedKey = key;
+				
+				try
+				{
+					customFont = CustomFont.load(selected, size.getValueF(),
+						oversample, verticalOffset.getValueF());
+					
+				}catch(Exception e)
+				{
+					// keep the key, so it doesn't try again on every frame
+					LOGGER.error("Couldn't load font {}", selected, e);
+				}
+			}
+			
+			return customFont != null ? customFont.getFont() : MC.font;
 		}
 		
-		loadedKey = null;
+		private void unload()
+		{
+			if(customFont != null)
+			{
+				customFont.close();
+				customFont = null;
+			}
+			
+			loadedKey = null;
+		}
 	}
 }
