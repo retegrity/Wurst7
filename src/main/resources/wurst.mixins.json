@@ -75,6 +75,7 @@
     "nametags.SubmitNodeCollectionMixin",
     "newchunks.ClientPacketListenerMixin",
     "nobackground.ScreenMixin",
+    "noclip.BlockStateBaseMixin",
     "noclip.LocalPlayerMixin",
     "nofireoverlay.ScreenEffectRendererMixin",
     "nofog.AtmosphericFogEnvironmentMixin",
