@@ -23,6 +23,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.phys.Vec3;
 import net.wurstclient.InputFaker;
 import net.wurstclient.InputFaker.TempRealInput;
@@ -81,6 +82,26 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 		{
 			EventManager.fire(UpdateEvent.INSTANCE);
 		}
+	}
+	
+	/**
+	 * Hides the sneak key while BoatFly uses it to fly down, so the server
+	 * doesn't make you get out of the vehicle.
+	 */
+	@Inject(method = "aiStep()V",
+		at = @At(value = "INVOKE",
+			target = "Lnet/minecraft/client/player/ClientInput;tick()V",
+			shift = At.Shift.AFTER))
+	private void onInputTick(CallbackInfo ci)
+	{
+		if(!WurstClient.INSTANCE.getHax().boatFlyHack.shouldHideSneak())
+			return;
+		
+		LocalPlayer player = (LocalPlayer)(Object)this;
+		Input keys = player.input.keyPresses;
+		if(keys.shift())
+			player.input.keyPresses = new Input(keys.forward(), keys.backward(),
+				keys.left(), keys.right(), keys.jump(), false, keys.sprint());
 	}
 	
 	@Inject(method = "sendPosition()V", at = @At("HEAD"))

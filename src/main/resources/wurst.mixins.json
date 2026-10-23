@@ -54,6 +54,8 @@
     "autosteal.ContainerScreenMixin",
     "autosteal.ShulkerBoxScreenMixin",
     "barrieresp.ClientLevelMixin",
+    "boatfly.EntityMixin",
+    "boatfly.LocalPlayerMixin",
     "cameradistance.CameraMixin",
     "cameranoclip.CameraMixin",
     "freecam.CameraMixin",
