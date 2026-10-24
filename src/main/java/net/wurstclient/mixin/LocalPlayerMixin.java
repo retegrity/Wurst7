@@ -37,6 +37,7 @@ import net.wurstclient.events.PreMotionListener.PreMotionEvent;
 import net.wurstclient.events.UpdateListener.UpdateEvent;
 import net.wurstclient.hack.HackList;
 import net.wurstclient.mixinterface.ILocalPlayer;
+import net.wurstclient.util.JumpUtils;
 
 @Mixin(LocalPlayer.class)
 public abstract class LocalPlayerMixin extends AbstractClientPlayer
@@ -85,8 +86,10 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 	}
 	
 	/**
-	 * Hides the sneak key while BoatFly uses it to fly down, so the server
-	 * doesn't make you get out of the vehicle.
+	 * Changes the keys after the game reads them, so the server sees the
+	 * changed input too: jumps from JumpUtils, and BoatFly hiding the sneak
+	 * key while it uses it to fly down (so the server doesn't make you get
+	 * out of the vehicle).
 	 */
 	@Inject(method = "aiStep()V",
 		at = @At(value = "INVOKE",
@@ -94,14 +97,16 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 			shift = At.Shift.AFTER))
 	private void onInputTick(CallbackInfo ci)
 	{
-		if(!WurstClient.INSTANCE.getHax().boatFlyHack.shouldHideSneak())
-			return;
-		
 		LocalPlayer player = (LocalPlayer)(Object)this;
 		Input keys = player.input.keyPresses;
-		if(keys.shift())
+		
+		boolean jump = JumpUtils.modifyJumpKey(player, keys.jump());
+		boolean shift = keys.shift()
+			&& !WurstClient.INSTANCE.getHax().boatFlyHack.shouldHideSneak();
+		
+		if(jump != keys.jump() || shift != keys.shift())
 			player.input.keyPresses = new Input(keys.forward(), keys.backward(),
-				keys.left(), keys.right(), keys.jump(), false, keys.sprint());
+				keys.left(), keys.right(), jump, shift, keys.sprint());
 	}
 	
 	@Inject(method = "sendPosition()V", at = @At("HEAD"))

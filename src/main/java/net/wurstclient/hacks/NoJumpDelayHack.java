@@ -9,12 +9,10 @@ package net.wurstclient.hacks;
 
 import net.wurstclient.Category;
 import net.wurstclient.SearchTags;
-import net.wurstclient.events.UpdateListener;
 import net.wurstclient.hack.Hack;
-import net.wurstclient.mixin.LivingEntityAccessor;
 
 @SearchTags({"no jump delay", "jump delay", "jump cooldown", "fast jump"})
-public final class NoJumpDelayHack extends Hack implements UpdateListener
+public final class NoJumpDelayHack extends Hack
 {
 	public NoJumpDelayHack()
 	{
@@ -22,21 +20,5 @@ public final class NoJumpDelayHack extends Hack implements UpdateListener
 		setCategory(Category.MOVEMENT);
 	}
 	
-	@Override
-	protected void onEnable()
-	{
-		EVENTS.add(UpdateListener.class, this);
-	}
-	
-	@Override
-	protected void onDisable()
-	{
-		EVENTS.remove(UpdateListener.class, this);
-	}
-	
-	@Override
-	public void onUpdate()
-	{
-		((LivingEntityAccessor)MC.player).wurst_setNoJumpDelay(0);
-	}
+	// See JumpUtils.modifyJumpKey()
 }

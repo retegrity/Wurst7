@@ -17,4 +17,7 @@ public interface LivingEntityAccessor
 {
 	@Accessor("noJumpDelay")
 	void wurst_setNoJumpDelay(int noJumpDelay);
+	
+	@Accessor("noJumpDelay")
+	int wurst_getNoJumpDelay();
 }

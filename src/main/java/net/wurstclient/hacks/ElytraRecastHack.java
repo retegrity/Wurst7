@@ -15,11 +15,11 @@ import net.wurstclient.Category;
 import net.wurstclient.SearchTags;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.hack.Hack;
-import net.wurstclient.mixin.LivingEntityAccessor;
 import net.wurstclient.mixinterface.IKeyMapping;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
+import net.wurstclient.util.JumpUtils;
 
 @SearchTags({"elytra recast", "ElytraBounce", "elytra bounce"})
 public final class ElytraRecastHack extends Hack implements UpdateListener
@@ -88,7 +88,7 @@ public final class ElytraRecastHack extends Hack implements UpdateListener
 				player.setSprinting(true);
 			
 			// hold jump and remove the jump delay so vanilla jumps right away
-			((LivingEntityAccessor)player).wurst_setNoJumpDelay(0);
+			JumpUtils.skipJumpDelay();
 			setJumpKey(true);
 			return;
 		}

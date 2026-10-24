@@ -26,7 +26,6 @@ import net.wurstclient.Category;
 import net.wurstclient.SearchTags;
 import net.wurstclient.events.UpdateListener;
 import net.wurstclient.hack.Hack;
-import net.wurstclient.mixin.LivingEntityAccessor;
 import net.wurstclient.mixinterface.IKeyMapping;
 import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.EnumSetting;
@@ -41,6 +40,7 @@ import net.wurstclient.util.FaceAimPoint;
 import net.wurstclient.util.PlaceRotationGuard;
 import net.wurstclient.util.Rotation;
 import net.wurstclient.util.RotationUtils;
+import net.wurstclient.util.JumpUtils;
 
 @SearchTags({"ScaffoldWalk", "scaffold walk", "bridge", "tower", "auto bridge"})
 public final class ScaffoldHack extends Hack implements UpdateListener
@@ -228,7 +228,7 @@ public final class ScaffoldHack extends Hack implements UpdateListener
 		handleSprint(player);
 		
 		if(towering)
-			((LivingEntityAccessor)player).wurst_setNoJumpDelay(0);
+			JumpUtils.skipJumpDelay();
 		
 		airTicks = player.onGround() ? 0 : airTicks + 1;
 		boolean telly = isTelly(towering);
