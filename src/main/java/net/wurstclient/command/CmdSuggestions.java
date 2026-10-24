@@ -24,6 +24,7 @@ import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
+import net.minecraft.world.level.block.Block;
 import net.wurstclient.Feature;
 import net.wurstclient.WurstClient;
 import net.wurstclient.hacks.TooManyHaxHack;
@@ -35,6 +36,9 @@ import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.settings.ItemListSetting;
 import net.wurstclient.settings.Setting;
 import net.wurstclient.settings.SliderSetting;
+import net.wurstclient.worldgen.OreBlocks;
+import net.wurstclient.worldgen.WorldgenData;
+import net.wurstclient.worldgen.WorldgenManager;
 
 /**
  * Tab-completion for Wurst commands in the chat, shown in the same popup as
@@ -235,6 +239,23 @@ public enum CmdSuggestions
 			case "item":
 			BuiltInRegistries.ITEM.keySet()
 				.forEach(id -> suggestions.add(shortId(id)));
+			break;
+			
+			case "ore":
+			for(Block block : BuiltInRegistries.BLOCK)
+				if(OreBlocks.isOre(block))
+					suggestions
+						.add(shortId(BuiltInRegistries.BLOCK.getKey(block)));
+			break;
+			
+			case "structure":
+			// starts loading the world generation if it isn't loaded yet,
+			// so the structures can be suggested soon
+			WorldgenData worldgen = WorldgenManager.getIfLoaded();
+			if(worldgen == null)
+				WorldgenManager.get();
+			else
+				suggestions.addAll(worldgen.getStructureNames());
 			break;
 			
 			case "gamemode":
