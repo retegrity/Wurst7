@@ -27,6 +27,11 @@ public final class RotationFaker
 	private float realPitch;
 	private boolean applied;
 	
+	// a camera rotation to apply after this tick's packet, see turnCamera()
+	private boolean cameraTurnQueued;
+	private float queuedYaw;
+	private float queuedPitch;
+	
 	// Rotation that stays active for a few ticks, so other players see a
 	// stable head direction instead of a rotation that snaps back every tick.
 	private boolean managed;
@@ -107,6 +112,13 @@ public final class RotationFaker
 			applied = false;
 		}
 		
+		if(cameraTurnQueued)
+		{
+			player.setYRot(queuedYaw);
+			player.setXRot(queuedPitch);
+			cameraTurnQueued = false;
+		}
+		
 		// Update the managed rotation for the next tick here, after this
 		// tick's packet was sent, so that next tick's movement (which happens
 		// before PreMotion) and next tick's packet use the same rotation.
@@ -159,6 +171,20 @@ public final class RotationFaker
 		}
 		
 		humanTurn(managedYaw, managedPitch, realYaw, realPitch);
+	}
+	
+	/**
+	 * Turns the camera at the end of this tick instead of right away. The
+	 * game draws the camera (and the hand) between the rotations of the last
+	 * tick and this one, but saves the last one at the start of the tick.
+	 * Turning before that would make the camera jump once per tick instead of
+	 * turning smoothly.
+	 */
+	public void turnCamera(float yaw, float pitch)
+	{
+		queuedYaw = yaw;
+		queuedPitch = pitch;
+		cameraTurnQueued = true;
 	}
 	
 	/**
@@ -378,7 +404,7 @@ public final class RotationFaker
 	 * The smallest rotation step that vanilla mouse movement can produce with
 	 * the current sensitivity setting.
 	 */
-	private float getMouseGcd()
+	public float getMouseGcd()
 	{
 		double sensitivity =
 			WurstClient.MC.options.sensitivity().get() * 0.6 + 0.2;
@@ -464,6 +490,20 @@ public final class RotationFaker
 	 * How much the rotation sent in the last movement packet changed compared
 	 * to the one before.
 	 */
+	/**
+	 * The rotation sent in the last movement packet, which is the one the
+	 * server checks block breaking and attacks against.
+	 */
+	public float getSentYaw()
+	{
+		return sentYaw;
+	}
+	
+	public float getSentPitch()
+	{
+		return sentPitch;
+	}
+	
 	public float getSentYawDelta()
 	{
 		return sentYawDelta;
