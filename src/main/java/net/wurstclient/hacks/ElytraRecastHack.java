@@ -95,8 +95,19 @@ public final class ElytraRecastHack extends Hack implements UpdateListener
 		
 		if(lockPitch.isChecked())
 			player.setXRot(pitch.getValueF());
+			
+		// Keep jump released while gliding, even if you hold space. When you
+		// hit the ground, the server stops the glide, but its packet only
+		// arrives after the jump above, when you are in the air again. Then
+		// the next tick can press jump fresh and reopen the elytra right
+		// away, so the flight doesn't stop.
+		if(player.isFallFlying())
+		{
+			setJumpKey(false);
+			return;
+		}
 		
-		if(player.isFallFlying() || player.onClimbable() || !player.canGlide())
+		if(player.onClimbable() || !player.canGlide())
 		{
 			releaseJumpKey();
 			return;
