@@ -619,6 +619,9 @@ public final class ClickGui
 		int xt1 = mouseX + tw + 11 <= sw ? mouseX + 8 : mouseX - tw - 8;
 		int xt2 = xt1 + tw + 3;
 		int yt1 = mouseY + th - 2 <= sh ? mouseY - 4 : mouseY - th - 4;
+		
+		// keep long tooltips on the screen
+		yt1 = Math.max(0, Math.min(yt1, sh - th - 2));
 		int yt2 = yt1 + th + 2;
 		
 		context.guiRenderState.up();
