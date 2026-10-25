@@ -460,6 +460,20 @@ public final class RotationFaker
 		return true;
 	}
 	
+	/**
+	 * How much the rotation sent in the last movement packet changed compared
+	 * to the one before.
+	 */
+	public float getSentYawDelta()
+	{
+		return sentYawDelta;
+	}
+	
+	public float getSentPitchDelta()
+	{
+		return sentPitchDelta;
+	}
+	
 	public float getServerYaw()
 	{
 		if(fakeRotation)
