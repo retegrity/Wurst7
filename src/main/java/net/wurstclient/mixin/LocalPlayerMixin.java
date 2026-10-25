@@ -243,7 +243,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 		if(hax == null || !hax.reachHack.isEnabled())
 			return super.blockInteractionRange();
 		
-		return hax.reachHack.getReachDistance();
+		return hax.reachHack.getBlockReach();
 	}
 	
 	@Override
@@ -253,7 +253,7 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 		if(hax == null || !hax.reachHack.isEnabled())
 			return super.entityInteractionRange();
 		
-		return hax.reachHack.getReachDistance();
+		return hax.reachHack.getEntityReach();
 	}
 	
 	/**
