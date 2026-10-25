@@ -45,6 +45,7 @@ import net.wurstclient.events.RightClickListener.RightClickEvent;
 import net.wurstclient.mixinterface.ILocalPlayer;
 import net.wurstclient.mixinterface.IMinecraft;
 import net.wurstclient.mixinterface.IMultiPlayerGameMode;
+import net.wurstclient.util.WurstWindowStyle;
 
 @Mixin(Minecraft.class)
 public abstract class MinecraftMixin
@@ -100,6 +101,29 @@ public abstract class MinecraftMixin
 			return;
 		
 		EventManager.fire(HandleInputEvent.INSTANCE);
+	}
+	
+	/**
+	 * Updates the window title and icon of WurstOptions' "Wurst Minecraft
+	 * window style" when it's turned on or off.
+	 */
+	@Inject(method = "tick()V", at = @At("HEAD"))
+	private void onTickHead(CallbackInfo ci)
+	{
+		WurstWindowStyle.update();
+	}
+	
+	/**
+	 * Replaces the whole window title with "Wurst Client" and the version,
+	 * without the "*" that vanilla adds for modded games.
+	 */
+	@Inject(method = "createTitle()Ljava/lang/String;",
+		at = @At("HEAD"),
+		cancellable = true)
+	private void onCreateTitle(CallbackInfoReturnable<String> cir)
+	{
+		if(WurstWindowStyle.isEnabled())
+			cir.setReturnValue(WurstWindowStyle.getTitle());
 	}
 	
 	@Inject(method = "startAttack()Z",

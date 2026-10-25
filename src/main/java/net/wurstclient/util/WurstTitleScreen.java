@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.wurstclient.WurstClient;
+import net.wurstclient.other_feature.OtfList;
 
 /**
  * The Wurst 6 style main menu: Wurst logo instead of the Minecraft logo,
@@ -43,6 +44,18 @@ public enum WurstTitleScreen
 	private static final int HAT_TEXTURE_SIZE = 256;
 	
 	private static boolean upsideDown;
+	
+	/**
+	 * Whether the Wurst 6 style main menu is turned on in WurstOptions. It's
+	 * off while Wurst is disabled.
+	 */
+	public static boolean isEnabled()
+	{
+		WurstClient wurst = WurstClient.INSTANCE;
+		OtfList otfs = wurst.getOtfs();
+		return otfs != null && wurst.isEnabled()
+			&& otfs.wurstOptionsOtf.isMainMenuEnabled();
+	}
 	
 	public static void setSplash(String splash)
 	{

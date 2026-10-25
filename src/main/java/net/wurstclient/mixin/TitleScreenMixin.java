@@ -114,7 +114,7 @@ public abstract class TitleScreenMixin extends Screen
 	@Inject(method = "init()V", at = @At("RETURN"))
 	private void onInit(CallbackInfo ci)
 	{
-		if(!WurstClient.INSTANCE.isEnabled())
+		if(!WurstTitleScreen.isEnabled())
 			return;
 		
 		for(AbstractWidget widget : Screens.getWidgets(this))
@@ -135,7 +135,7 @@ public abstract class TitleScreenMixin extends Screen
 	private void onDrawVersionText(GuiGraphicsExtractor graphics, Font font,
 		String text, int x, int y, int color, Operation<Void> original)
 	{
-		if(!WurstClient.INSTANCE.isEnabled())
+		if(!WurstTitleScreen.isEnabled())
 			original.call(graphics, font, text, x, y, color);
 	}
 	
@@ -145,7 +145,7 @@ public abstract class TitleScreenMixin extends Screen
 	private void onExtractRenderState(GuiGraphicsExtractor graphics, int mouseX,
 		int mouseY, float partialTick, CallbackInfo ci)
 	{
-		if(!WurstClient.INSTANCE.isEnabled())
+		if(!WurstTitleScreen.isEnabled())
 			return;
 		
 		WurstTitleScreen.renderTexts(graphics, font, width, height);
@@ -158,7 +158,7 @@ public abstract class TitleScreenMixin extends Screen
 	private void onMouseClicked(MouseButtonEvent event, boolean doubleClick,
 		CallbackInfoReturnable<Boolean> cir)
 	{
-		if(!WurstClient.INSTANCE.isEnabled() || event.button() != 0)
+		if(!WurstTitleScreen.isEnabled() || event.button() != 0)
 			return;
 		
 		if(WurstTitleScreen.isWebsiteLink(font, width, height, event.x(),

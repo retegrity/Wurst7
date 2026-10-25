@@ -40,6 +40,16 @@ public final class WurstOptionsOtf extends OtherFeature
 			+ "Lower this if lines look too thick compared to older versions.",
 		2, 0.5, 4, 0.25, ValueDisplay.DECIMAL.withSuffix(" px"));
 	
+	private final CheckboxSetting mainMenu =
+		new CheckboxSetting("Wurst main menu",
+			"Brings back the custom Wurst main menu from Wurst v6.", true);
+	
+	private final CheckboxSetting windowStyle =
+		new CheckboxSetting("Wurst Minecraft window style",
+			"Changes the title of the game window to \"Wurst Client\" and the"
+				+ " Minecraft version, and its icon to the Wurst icon.",
+			true);
+	
 	private final CheckboxSetting loadingScreen =
 		new CheckboxSetting("Wurst loading screen",
 			"Replaces the Mojang loading screen with the one from Wurst 1.3."
@@ -51,7 +61,19 @@ public final class WurstOptionsOtf extends OtherFeature
 		super("WurstOptions", "description.wurst.other_feature.wurstoptions");
 		addSetting(location);
 		addSetting(lineWidth);
+		addSetting(mainMenu);
+		addSetting(windowStyle);
 		addSetting(loadingScreen);
+	}
+	
+	public boolean isMainMenuEnabled()
+	{
+		return mainMenu.isChecked();
+	}
+	
+	public boolean isWindowStyleEnabled()
+	{
+		return windowStyle.isChecked();
 	}
 	
 	public boolean isLoadingScreenEnabled()

@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LogoRenderer;
-import net.wurstclient.WurstClient;
 import net.wurstclient.util.WurstTitleScreen;
 
 @Mixin(LogoRenderer.class)
@@ -30,7 +29,7 @@ public abstract class LogoRendererMixin
 	private void onExtractRenderState(GuiGraphicsExtractor graphics, int width,
 		float alpha, int heightOffset, CallbackInfo ci)
 	{
-		if(!WurstClient.INSTANCE.isEnabled())
+		if(!WurstTitleScreen.isEnabled())
 			return;
 		
 		WurstTitleScreen.renderLogo(graphics, width, alpha, heightOffset);

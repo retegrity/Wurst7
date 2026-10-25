@@ -20,7 +20,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.SplashRenderer;
 import net.minecraft.network.chat.Component;
-import net.wurstclient.WurstClient;
 import net.wurstclient.util.WurstTitleScreen;
 
 @Mixin(SplashRenderer.class)
@@ -44,14 +43,14 @@ public abstract class SplashRendererMixin
 		constant = @Constant(floatValue = 123F))
 	private float modifySplashX(float original)
 	{
-		return WurstClient.INSTANCE.isEnabled() ? 90F : original;
+		return WurstTitleScreen.isEnabled() ? 90F : original;
 	}
 	
 	@ModifyConstant(method = "extractRenderState",
 		constant = @Constant(floatValue = 69F))
 	private float modifySplashY(float original)
 	{
-		return WurstClient.INSTANCE.isEnabled() ? 72F : original;
+		return WurstTitleScreen.isEnabled() ? 72F : original;
 	}
 	
 	/**
@@ -62,6 +61,6 @@ public abstract class SplashRendererMixin
 		constant = @Constant(intValue = -8))
 	private int modifySplashTextY(int original)
 	{
-		return WurstClient.INSTANCE.isEnabled() ? 0 : original;
+		return WurstTitleScreen.isEnabled() ? 0 : original;
 	}
 }
