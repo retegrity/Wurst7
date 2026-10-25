@@ -46,9 +46,7 @@ public final class TillauraHack extends Hack implements HandleInputListener
 	
 	private final CheckboxSetting checkLOS =
 		new CheckboxSetting("Check line of sight",
-			"Prevents Tillaura from reaching through blocks.\n"
-				+ "Good for NoCheat+ servers, but unnecessary in vanilla.",
-			true);
+			"Prevents Tillaura from reaching through blocks.", true);
 	
 	private final List<Block> tillableBlocks = List.of(Blocks.GRASS_BLOCK,
 		Blocks.DIRT_PATH, Blocks.DIRT, Blocks.COARSE_DIRT);

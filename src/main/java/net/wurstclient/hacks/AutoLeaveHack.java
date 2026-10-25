@@ -35,14 +35,13 @@ public final class AutoLeaveHack extends Hack implements UpdateListener
 	
 	public final EnumSetting<Mode> mode = new EnumSetting<>("Mode",
 		"\u00a7lQuit\u00a7r mode just quits the game normally."
-			+ " Bypasses NoCheat+ but not CombatLog.\n"
+			+ " Doesn't bypass CombatLog.\n"
 			+ "\u00a7lChars\u00a7r mode sends a special chat message that"
-			+ " causes the server to kick you. Bypasses NoCheat+ and some"
-			+ " versions of CombatLog.\n"
+			+ " causes the server to kick you. Bypasses some versions of"
+			+ " CombatLog.\n"
 			+ "\u00a7lSelfHurt\u00a7r mode sends the packet for attacking"
 			+ " another player, but with yourself as both the attacker and the"
-			+ " target, causing the server to kick you. Bypasses both CombatLog"
-			+ " and NoCheat+.\n"
+			+ " target, causing the server to kick you. Bypasses CombatLog.\n"
 			+ "\u00a7lKeepAlive\u00a7r mode answers the server's connection"
 			+ " check wrong, so it kicks you for timing out. Doesn't work on"
 			+ " Velocity servers.\n"

@@ -54,8 +54,8 @@ public final class KillauraLegitHack extends Hack implements UpdateListener,
 		new SliderSetting("Speed randomization",
 			"Helps you bypass anti-cheat plugins by varying the delay between"
 				+ " attacks.\n\n" + "\u00b1100ms is recommended for Vulcan.\n\n"
-				+ "0 (off) is fine for NoCheat+, AAC, Grim, Verus, Spartan, and"
-				+ " vanilla servers.",
+				+ "0 (off) is fine for AAC, Grim, Verus, Spartan, and vanilla"
+				+ " servers.",
 			100, 0, 1000, 50, ValueDisplay.INTEGER.withPrefix("\u00b1")
 				.withSuffix("ms").withLabel(0, "off"));
 	
