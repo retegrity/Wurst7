@@ -34,12 +34,19 @@ public final class SmoothHandBobHack extends Hack
 				+ " moves.",
 			true);
 	
+	private final CheckboxSetting noConsumingBob = new CheckboxSetting(
+		"Also include consuming animation",
+		"Stops food and drinks from bobbing up and down while you eat or"
+			+ " drink. They still move up to your mouth, then stay in place.",
+		false);
+	
 	public SmoothHandBobHack()
 	{
 		super("SmoothHandBob");
 		setCategory(Category.RENDER);
 		addSetting(height);
 		addSetting(noWorldBob);
+		addSetting(noConsumingBob);
 	}
 	
 	@Override
@@ -71,6 +78,15 @@ public final class SmoothHandBobHack extends Hack
 	 * Called from GameRendererMixin instead of vanilla's bobView() for the
 	 * hand. Only works with the View Bobbing option enabled, like vanilla.
 	 */
+	/**
+	 * Whether the bobbing of food and drinks while eating or drinking should
+	 * be removed. Called from smoothhandbob.ItemInHandRendererMixin.
+	 */
+	public boolean isConsumingBobRemoved()
+	{
+		return isEnabled() && noConsumingBob.isChecked();
+	}
+	
 	public void bobHand(CameraRenderState cameraState, PoseStack matrices)
 	{
 		if(!cameraState.entityRenderState.isPlayer)

@@ -99,6 +99,7 @@
     "rotations.EntityMixin",
     "rotations.KeyboardInputMixin",
     "rotations.LivingEntityMixin",
+    "smoothhandbob.ItemInHandRendererMixin",
     "snowshoe.PowderSnowBlockMixin",
     "timer.DeltaTrackerTimerMixin",
     "truesight.EntityMixin",
