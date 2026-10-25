@@ -18,6 +18,7 @@ import net.minecraft.resources.Identifier;
 import net.wurstclient.DontBlock;
 import net.wurstclient.SearchTags;
 import net.wurstclient.other_feature.OtherFeature;
+import net.wurstclient.settings.CheckboxSetting;
 import net.wurstclient.settings.EnumSetting;
 import net.wurstclient.settings.SliderSetting;
 import net.wurstclient.settings.SliderSetting.ValueDisplay;
@@ -39,11 +40,23 @@ public final class WurstOptionsOtf extends OtherFeature
 			+ "Lower this if lines look too thick compared to older versions.",
 		2, 0.5, 4, 0.25, ValueDisplay.DECIMAL.withSuffix(" px"));
 	
+	private final CheckboxSetting loadingScreen =
+		new CheckboxSetting("Wurst loading screen",
+			"Replaces the Mojang loading screen with the one from Wurst 1.3."
+				+ " The TNT blocks on it come from your current resource pack.",
+			true);
+	
 	public WurstOptionsOtf()
 	{
 		super("WurstOptions", "description.wurst.other_feature.wurstoptions");
 		addSetting(location);
 		addSetting(lineWidth);
+		addSetting(loadingScreen);
+	}
+	
+	public boolean isLoadingScreenEnabled()
+	{
+		return loadingScreen.isChecked();
 	}
 	
 	public float getLineWidth()

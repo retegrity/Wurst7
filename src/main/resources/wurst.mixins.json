@@ -28,6 +28,7 @@
     "LanguageManagerMixin",
     "FireworkRocketEntityAccessor",
     "FontAccessor",
+    "LoadingOverlayMixin",
     "LivingEntityAccessor",
     "LevelRendererMixin",
     "LivingEntityRendererMixin",
