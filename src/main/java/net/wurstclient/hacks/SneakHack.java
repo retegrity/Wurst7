@@ -151,6 +151,21 @@ public final class SneakHack extends Hack
 			input.right(), input.jump(), true, input.sprint());
 	}
 	
+	/**
+	 * Whether Legit mode should sneak in this tick. Called from
+	 * LocalPlayerMixin right after the game reads the keys. Pressing the
+	 * sneak key alone isn't enough, since opening or closing a screen
+	 * releases all keys right before the game reads them, which made you
+	 * stop sneaking for a tick.
+	 */
+	public boolean shouldForceSneak()
+	{
+		if(!isEnabled() || mode.getSelected() != SneakMode.LEGIT)
+			return false;
+		
+		return !offWhileFlying.isChecked() || !isFlying();
+	}
+	
 	private boolean isFlying()
 	{
 		if(MC.player.getAbilities().flying)

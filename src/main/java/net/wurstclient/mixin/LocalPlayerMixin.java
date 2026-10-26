@@ -87,9 +87,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 	
 	/**
 	 * Changes the keys after the game reads them, so the server sees the
-	 * changed input too: jumps from JumpUtils, and BoatFly hiding the sneak
-	 * key while it uses it to fly down (so the server doesn't make you get
-	 * out of the vehicle).
+	 * changed input too: jumps from JumpUtils, Legit Sneak, and BoatFly
+	 * hiding the sneak key while it uses it to fly down (so the server doesn't
+	 * make you get out of the vehicle).
 	 */
 	@Inject(method = "aiStep()V",
 		at = @At(value = "INVOKE",
@@ -101,8 +101,9 @@ public abstract class LocalPlayerMixin extends AbstractClientPlayer
 		Input keys = player.input.keyPresses;
 		
 		boolean jump = JumpUtils.modifyJumpKey(player, keys.jump());
-		boolean shift = keys.shift()
-			&& !WurstClient.INSTANCE.getHax().boatFlyHack.shouldHideSneak();
+		HackList hax = WurstClient.INSTANCE.getHax();
+		boolean shift = (keys.shift() || hax.sneakHack.shouldForceSneak())
+			&& !hax.boatFlyHack.shouldHideSneak();
 		
 		if(jump != keys.jump() || shift != keys.shift())
 			player.input.keyPresses = new Input(keys.forward(), keys.backward(),
